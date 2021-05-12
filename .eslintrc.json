@@ -1,0 +1,26 @@
+{
+    "plugins": [
+        "testing-library",
+        "jest-dom",
+        "prettier"
+    ],
+    "extends": [
+        "plugin:testing-library/recommended",
+        "plugin:testing-library/react",
+        "plugin:jest-dom/recommended",
+        "plugin:prettier/recommended",
+        "react-app"
+    ],
+    "parser": "babel-eslint",
+    "rules": {
+        "no-unused-vars": "warn",
+        "no-tabs": ["error", {
+            "allowIndentationTabs": true
+            }
+        ]
+    },
+    "env": {
+        "browser": true,
+        "node": true
+    }
+}
