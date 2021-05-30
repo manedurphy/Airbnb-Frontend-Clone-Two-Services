@@ -1,10 +1,9 @@
-module.exports.photoHarvest = async function (Photo) {
+(async function () {
     const aws = require('aws-sdk');
     const request = require('request');
     const { join } = require('path');
     const { readFileSync, createWriteStream } = require('fs');
     const { createApi } = require('unsplash-js');
-    const { photoDescription } = require('../mock/PhotoDescription');
 
     const download = (url, path, callback) => {
         request.head(url, (_err, _res, _body) => {
@@ -47,18 +46,12 @@ module.exports.photoHarvest = async function (Photo) {
         const fileContent = readFileSync(filePath);
         const uploadParams = {
             Bucket: 'fec-corgis',
-            Key: `houses/image/${i}`,
+            Key: `houses/images/${i}`,
             Body: fileContent,
             ContentType: 'image/jpeg',
             ACL: 'public-read',
         };
 
-        const data = await s3.upload(uploadParams).promise();
-        await Photo.create({
-            link: data.Location,
-            isMain: i % 5 === 0 ? true : false,
-            description: photoDescription[Math.floor(Math.random() * 100)],
-            propertyId: Math.ceil(i / 5),
-        });
+        await s3.upload(uploadParams).promise();
     }
-};
+})();

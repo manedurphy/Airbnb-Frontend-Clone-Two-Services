@@ -16,7 +16,7 @@ module.exports = class MorePlacesRepository {
     async getReviewsInfo() {
         const { title, hostId } = await Property.findByPk(this.id);
         const { data } = await axios.get(
-            `http://${process.env.HOSTEDBY_DOMAIN}/api/hostedbyService/superhost/${hostId}`
+            `http://${process.env.HOSTEDBY_DOMAIN}/api/hostedbyService/superhost/${hostId}`,
         );
 
         this.data.title = title;

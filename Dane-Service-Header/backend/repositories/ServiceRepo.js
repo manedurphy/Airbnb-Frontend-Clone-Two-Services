@@ -8,9 +8,9 @@ module.exports = class ServiceRepository {
         this.id = id;
         this.data = {
             photos: [],
+            isSuperhost: false,
             location: {},
             reviews: {},
-            isSuperhost: false,
         };
     }
 
@@ -29,9 +29,7 @@ module.exports = class ServiceRepository {
 
     async getLocation() {
         try {
-            const { data } = await axios.get(
-                `http://${process.env.MAP_DOMAIN}/location/${this.id}`
-            );
+            const { data } = await axios.get(`http://${process.env.MAP_DOMAIN}/location/${this.id}`);
 
             this.data.location = { ...data };
         } catch (error) {
@@ -41,9 +39,7 @@ module.exports = class ServiceRepository {
 
     async getReviews() {
         try {
-            const { data } = await axios.get(
-                `http://${process.env.REVIEWS_DOMAIN}/reviews/header/${this.id}`
-            );
+            const { data } = await axios.get(`http://${process.env.REVIEWS_DOMAIN}/reviews/header/${this.id}`);
 
             this.data.reviews = { ...data };
         } catch (error) {
@@ -55,7 +51,7 @@ module.exports = class ServiceRepository {
         try {
             const { hostId } = await Property.findByPk(this.id);
             const { data } = await axios.get(
-                `http://${process.env.HOSTEDBY_DOMAIN}/api/hostedbyService/superhost/${hostId}`
+                `http://${process.env.HOSTEDBY_DOMAIN}/api/hostedbyService/superhost/${hostId}`,
             );
 
             this.data.isSuperhost = data;
@@ -66,9 +62,9 @@ module.exports = class ServiceRepository {
 
     async getData() {
         await this.getPhotos();
+        await this.getSuperhostStatus();
         await this.getLocation();
         await this.getReviews();
-        await this.getSuperhostStatus();
         return this.data;
     }
 };
