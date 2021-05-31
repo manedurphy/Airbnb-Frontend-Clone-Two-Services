@@ -39,3 +39,9 @@ destroy:
 forward:
 	kubectl config set-context --current --namespace=ingress-nginx
 	kubectl port-forward service/ingress-nginx-controller 5000:80
+
+eks:
+	eksctl create cluster --config-file eksctl.yaml
+
+eks-destroy:
+	eksctl delete cluster --config-file eksctl.yaml

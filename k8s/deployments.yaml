@@ -5,7 +5,7 @@ metadata:
     app: proxy-deploy
   name: proxy-deploy
 spec:
-  replicas: 1
+  replicas: 10
   selector:
     matchLabels:
       app: proxy-deploy
@@ -30,7 +30,7 @@ metadata:
     app: redis-read-deploy
   name: redis-read-deploy
 spec:
-  replicas: 1
+  replicas: 10
   selector:
     matchLabels:
       app: redis-read-deploy
@@ -83,7 +83,7 @@ metadata:
     app: photo-header-deploy
   name: photo-header-deploy
 spec:
-  replicas: 1
+  replicas: 10
   selector:
     matchLabels:
       app: photo-header-deploy
@@ -116,7 +116,7 @@ metadata:
     app: hosted-by-deploy
   name: hosted-by-deploy
 spec:
-  replicas: 1
+  replicas: 10
   selector:
     matchLabels:
       app: hosted-by-deploy
