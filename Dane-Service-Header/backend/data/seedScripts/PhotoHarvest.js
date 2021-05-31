@@ -45,7 +45,7 @@
 
         const fileContent = readFileSync(filePath);
         const uploadParams = {
-            Bucket: 'fec-corgis',
+            Bucket: process.env.BUCKET,
             Key: `houses/images/${i}`,
             Body: fileContent,
             ContentType: 'image/jpeg',

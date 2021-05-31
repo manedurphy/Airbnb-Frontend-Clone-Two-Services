@@ -9,7 +9,7 @@
         "start": "webpack serve",
         "build": "webpack",
         "watch": "webpack -w",
-        "server": "pm2 start backend/serverStart.js --watch --name hostedby",
+        "server": "node backend/serverStart.js",
         "seed": "node backend/data/seedScripts"
     },
     "keywords": [],

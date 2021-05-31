@@ -1,12 +1,12 @@
+const client = require('../constants/client');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const { hostedbyCache } = require('../middleware/hostedbyCache');
-const client = require('../constants/client');
 
 module.exports = [
     '/api/hostedbyService/:propertyId',
     hostedbyCache,
     createProxyMiddleware({
-        target: `http://${process.env.HOSTEDBY_DOMAIN}`,
+        target: process.env.HOSTEDBY_DOMAIN,
         onProxyRes: (proxyRes, req, res) => {
             const { propertyId } = req.params;
             proxyRes.on('data', (data) => {

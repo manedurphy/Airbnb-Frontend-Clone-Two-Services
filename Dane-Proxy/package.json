@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "analyze": "webpack-bundle-analyzer stats.json",
-        "server": "pm2 start index.js --watch"
+        "server": "node index.js"
     },
     "keywords": [],
     "author": "",

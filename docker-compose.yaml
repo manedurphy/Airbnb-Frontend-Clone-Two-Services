@@ -1,0 +1,67 @@
+version: "3.9"
+
+services:
+  photo-header-service:
+    restart: always
+    build:
+      context: ./Dane-Service-Header
+      dockerfile: Dockerfile
+    ports:
+    - 5001:5001
+    environment:
+    - HOST=photo-header-db
+    - MYSQL_USER=root
+    - MYSQL_PASSWORD=password
+    depends_on:
+      - photo-header-db
+
+  hosted-by-service:
+    restart: always
+    build:
+      context: ./Dane-Service-HostedBy
+      dockerfile: Dockerfile
+    ports:
+    - 5002:5002
+    environment:
+    - HOST=hosted-by-db
+    - MYSQL_USERNAME=root
+    - MYSQL_PASSWORD=password
+    depends_on:
+    - hosted-by-db
+
+  proxy:
+    restart: always
+    build:
+      context: ./Dane-Proxy
+      dockerfile: Dockerfile
+    ports:
+    - 80:5000
+    depends_on:
+    - redis
+    environment: 
+    - HEADER_DOMAIN=http://photo-header-service:5001
+    - HOSTEDBY_DOMAIN=http://hosted-by-service:5002
+
+  redis:
+    restart: always
+    image: redis:6.2.3-alpine
+    ports:
+    - 6379:6379
+
+  photo-header-db:
+    restart: always
+    image: mysql:8.0.25
+    environment:
+    -  MYSQL_ROOT_PASSWORD=password
+    volumes:
+    - ./storage/photo-header-dump:/docker-entrypoint-initdb.d
+    - ./data/photo-header:/var/lib/mysql
+
+  hosted-by-db:
+    restart: always
+    image: mysql:8.0.25
+    environment:
+    -  MYSQL_ROOT_PASSWORD=password
+    volumes:
+    - ./storage/hosted-by-dump:/docker-entrypoint-initdb.d
+    - ./data/hosted-by:/var/lib/mysql

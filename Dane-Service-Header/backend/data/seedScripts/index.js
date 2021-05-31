@@ -1,8 +1,8 @@
 const mysql = require('mysql2');
 
 const connection = mysql.createConnection({
-    host: 'localhost',
-    user: process.env.MYSQL_USERNAME,
+    host: process.env.HOST,
+    user: process.env.MYSQL_USER,
     password: process.env.MYSQL_PASSWORD,
 });
 
@@ -15,6 +15,7 @@ const connection = mysql.createConnection({
         await require('./PropertySeed');
         await require('./PhotoSeed');
     } catch (error) {
+        console.log(process.env.HOST);
         console.log('ERROR IN SEEDING SCRIPT', error);
     }
 })();
