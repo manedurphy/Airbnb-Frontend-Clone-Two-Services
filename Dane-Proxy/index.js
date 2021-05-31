@@ -1,13 +1,15 @@
 const express = require('express');
 const path = require('path');
-const headerRoutes = require('./routes/headerRoutes');
-const hostedbyRoutes = require('./routes/hostedbyRoutes');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(...headerRoutes);
-app.use(...hostedbyRoutes);
+if (process.env.NODE_ENV === 'development') {
+    const headerRoutes = require('./routes/headerRoutes');
+    const hostedbyRoutes = require('./routes/hostedbyRoutes');
+    app.use(...headerRoutes);
+    app.use(...hostedbyRoutes);
+}
 
 app.get('/header.bundle.js', (req, res) => {
     if (req.header('Accept-Encoding').includes('br')) {

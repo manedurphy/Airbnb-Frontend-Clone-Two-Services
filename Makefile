@@ -8,7 +8,7 @@ airbnb-client-image:
 	docker build -t airbnb-client-service -f ./Dockerfile .
 
 proxy-image:
-	cd Dane-Proxy && docker build -t proxy-service .
+	cd Dane-Proxy && docker build -t proxy-service -f Dockerfile.prod .
 
 build: photo-header-image hosted-by-image proxy-image
 
@@ -25,11 +25,17 @@ docker-push: build
 cluster:
 	kind create cluster --config=kind.yaml
 
+ingress-controller:
+	kubectl create namespace ingress-nginx
+	helm install --namespace=ingress-nginx ingress-nginx ingress-nginx/ingress-nginx
+	kubectl wait --namespace=ingress-nginx --for=condition=Ready --timeout=5m pod -l app.kubernetes.io/name=ingress-nginx
+
 deploy:
 	kubectl apply -f k8s
 
 destroy:
-	kubectl delete -f k8s
+	kubectl --namespace=default delete -f k8s
 
 forward:
-	kubectl port-forward service/proxy-service 5000:5000
+	kubectl config set-context --current --namespace=ingress-nginx
+	kubectl port-forward service/ingress-nginx-controller 5000:80

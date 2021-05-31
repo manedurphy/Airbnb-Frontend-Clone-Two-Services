@@ -5,7 +5,7 @@ metadata:
     app: proxy-deploy
   name: proxy-deploy
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: proxy-deploy
@@ -52,7 +52,7 @@ metadata:
     app: photo-header-deploy
   name: photo-header-deploy
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: photo-header-deploy
@@ -66,13 +66,15 @@ spec:
         name: photo-header-service
         env:
         - name: HOST
-          value: photo-header-db.c8gbra4rkp9f.us-east-1.rds.amazonaws.com
+          value: photo-header-db.chd3an5qstlr.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD
           value: password
         - name: HOSTEDBY_DOMAIN
           value: http://hosted-by-service:5002
+        - name: REDIS_URL
+          value: redis://redis-service
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -81,7 +83,7 @@ metadata:
     app: hosted-by-deploy
   name: hosted-by-deploy
 spec:
-  replicas: 5
+  replicas: 1
   selector:
     matchLabels:
       app: hosted-by-deploy
@@ -95,8 +97,10 @@ spec:
         name: hosted-by-service
         env:
         - name: HOST
-          value: hosted-by-db.c8gbra4rkp9f.us-east-1.rds.amazonaws.com
+          value: hosted-by-db.chd3an5qstlr.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD
           value: password
+        - name: REDIS_URL
+          value: redis://redis-service

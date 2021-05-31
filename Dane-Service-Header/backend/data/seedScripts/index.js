@@ -10,10 +10,10 @@ const connection = mysql.createConnection({
     try {
         await connection.promise().execute('DROP DATABASE IF EXISTS `Header`');
         await connection.promise().execute('CREATE DATABASE `Header`');
-        connection.destroy();
 
         await require('./PropertySeed');
         await require('./PhotoSeed');
+        connection.destroy();
     } catch (error) {
         console.log('ERROR IN SEEDING SCRIPT', error);
     }

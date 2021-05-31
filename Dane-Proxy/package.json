@@ -12,8 +12,9 @@
     "dependencies": {
         "aws-sdk": "^2.834.0",
         "axios": "^0.21.1",
-        "express": "^4.17.1",
-        "http-proxy-middleware": "^1.0.6",
-        "redis": "^3.0.2"
+        "express": "^4.17.1"
+    },
+    "devDependencies": {
+        "http-proxy-middleware": "^1.0.6"
     }
 }

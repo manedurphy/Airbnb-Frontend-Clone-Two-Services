@@ -10,13 +10,13 @@ const connection = mysql.createConnection({
     try {
         await connection.promise().execute('DROP DATABASE IF EXISTS `HostedBy`');
         await connection.promise().execute('CREATE DATABASE `HostedBy`');
-        connection.destroy();
 
         await require('./HostSeed');
         await require('./CoHostSeed');
         await require('./LanguageSeed');
         await require('./HostLanguageSeed');
         await require('./HostedBySeed');
+        connection.destroy();
     } catch (error) {
         console.log('ERROR IN SEEDING SCRIPT', error);
     }
