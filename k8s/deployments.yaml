@@ -5,7 +5,7 @@ metadata:
     app: proxy-deploy
   name: proxy-deploy
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
       app: proxy-deploy
@@ -52,7 +52,7 @@ metadata:
     app: photo-header-deploy
   name: photo-header-deploy
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
       app: photo-header-deploy
@@ -66,7 +66,7 @@ spec:
         name: photo-header-service
         env:
         - name: HOST
-          value: photo-header-db.cabxfryitut1.us-east-1.rds.amazonaws.com
+          value: photo-header-db.c8gbra4rkp9f.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD
@@ -81,7 +81,7 @@ metadata:
     app: hosted-by-deploy
   name: hosted-by-deploy
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
       app: hosted-by-deploy
@@ -95,7 +95,7 @@ spec:
         name: hosted-by-service
         env:
         - name: HOST
-          value: hosted-by-db.cabxfryitut1.us-east-1.rds.amazonaws.com
+          value: hosted-by-db.c8gbra4rkp9f.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD

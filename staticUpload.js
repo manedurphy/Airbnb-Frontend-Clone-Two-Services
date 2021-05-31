@@ -13,13 +13,13 @@ fs.readdir(folderPath, (err, data) => {
         const fileType = mime.lookup(path.join(folderPath, file));
 
         const params = {
-            Bucket: 'fec-corgis',
+            Bucket: process.env.BUCKET,
             Key: `static/${file}`,
             Body: fileContent,
             ACL: 'public-read',
             ContentType: fileType,
         };
-        s3.upload(params, function (err, data) {
+        s3.upload(params, function (_, data) {
             console.log('Success!', data);
         });
     });

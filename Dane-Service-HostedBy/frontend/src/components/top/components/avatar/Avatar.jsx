@@ -7,7 +7,7 @@ import medal from './medal.svg';
 const Avatar = ({ avatar, superHost }) => (
     <AvatarContainer>
         <AvatarImg src={avatar} alt={'host'} />
-        {superHost && <AvatarMedal src={`https://fec-corgis.s3.amazonaws.com/static${medal}`} />}
+        {superHost && <AvatarMedal src={medal} />}
     </AvatarContainer>
 );
 

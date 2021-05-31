@@ -1,4 +1,5 @@
 const router = require('express').Router();
+const client = require('../../redis/client');
 const responses = require('../../constants/routeResponses');
 const Host = require('../../models/Host');
 const Response = require('../../constants/Response');
@@ -8,12 +9,24 @@ router.get('/:propertyId', async (req, res) => {
     const { propertyId } = req.params;
     const repo = new ServiceRepository(propertyId);
     try {
-        if (propertyId > 100) return res.status(404).json(new Response(responses.notFound));
+        if (propertyId > 100) {
+            res.status(404).json(new Response(responses.notFound));
+            return;
+        }
 
-        const hostedBy = await repo.getData();
-        return res.status(200).json(hostedBy);
+        client.get(`hostedby${propertyId}`, async (_, data) => {
+            if (!data) {
+                const hostedBy = await repo.getData();
+                client.setex(`hostedby${propertyId}`, 3600, JSON.stringify(hostedBy));
+                res.status(200).json(hostedBy);
+            } else {
+                console.log('Retrieved data from Redis store!');
+                res.status(200).json(data);
+            }
+        });
     } catch (error) {
-        return res.status(500).json(new Response(responses.serverError));
+        console.error('[ERROR] ', error);
+        res.status(500).json(new Response(responses.serverError));
     }
 });
 
@@ -21,11 +34,15 @@ router.get('/superhost/:id', async (req, res) => {
     try {
         const host = await Host.findByPk(req.params.id);
 
-        if (!host) return res.status(404).json(new Response(responses.hostNotFound));
+        if (!host) {
+            res.status(404).json(new Response(responses.hostNotFound));
+            return;
+        }
 
-        return res.status(200).send(host.isSuperhost);
+        res.status(200).send(host.isSuperhost);
     } catch (error) {
-        return res.status(500).json(new Response(responses.serverError));
+        console.error('[ERROR] ', error);
+        res.status(500).json(new Response(responses.serverError));
     }
 });
 
