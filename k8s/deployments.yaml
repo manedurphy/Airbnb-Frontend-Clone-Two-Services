@@ -22,28 +22,59 @@ spec:
           value: http://photo-header-service:5001
         - name: HOSTEDBY_DOMAIN
           value: http://hosted-by-service:5002
-        - name: REDIS_URL
-          value: redis://redis-service
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: redis-deploy
-  name: redis-deploy
+    app: redis-read-deploy
+  name: redis-read-deploy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis-deploy
+      app: redis-read-deploy
   template:
     metadata:
       labels:
-        app: redis-deploy
+        app: redis-read-deploy
     spec:
       containers:
       - image: redis:6.2.3-alpine
         name: redis
+        command:
+          - "redis-server"
+        args:
+          - "--replicaof"
+          - "redis-write-service.default.svc.cluster.local"
+          - "6379"
+          - "--protected-mode"
+          - "no" 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis-write-deploy
+  name: redis-write-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-write-deploy
+  template:
+    metadata:
+      labels:
+        app: redis-write-deploy
+    spec:
+      containers:
+      - image: redis:6.2.3-alpine
+        name: redis
+        command:
+          - "redis-server"
+        args:
+          - "--protected-mode"
+          - "no"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -73,8 +104,10 @@ spec:
           value: password
         - name: HOSTEDBY_DOMAIN
           value: http://hosted-by-service:5002
-        - name: REDIS_URL
-          value: redis://redis-service
+        - name: REDIS_READ_URL
+          value: redis://redis-read-service
+        - name: REDIS_WRITE_URL
+          value: redis://redis-write-service
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -102,5 +135,7 @@ spec:
           value: manedurphy
         - name: MYSQL_PASSWORD
           value: password
-        - name: REDIS_URL
-          value: redis://redis-service
+        - name: REDIS_READ_URL
+          value: redis://redis-read-service
+        - name: REDIS_WRITE_URL
+          value: redis://redis-write-service

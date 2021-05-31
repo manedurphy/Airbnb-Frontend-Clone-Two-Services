@@ -13,7 +13,8 @@ services:
     - MYSQL_USER=root
     - MYSQL_PASSWORD=password
     - HOSTEDBY_DOMAIN=http://hosted-by-service:5002
-    - REDIS_URL=redis://redis:6379
+    - REDIS_READ_URL=redis://redis:6379
+    - REDIS_WRITE_URL=redis://redis:6379
     depends_on:
     - photo-header-db
 
@@ -28,7 +29,8 @@ services:
     - HOST=hosted-by-db
     - MYSQL_USER=root
     - MYSQL_PASSWORD=password
-    - REDIS_URL=redis://redis:6379
+    - REDIS_READ_URL=redis://redis:6379
+    - REDIS_WRITE_URL=redis://redis:6379
     depends_on:
     - hosted-by-db
 
@@ -44,7 +46,6 @@ services:
     environment: 
     - HEADER_DOMAIN=http://photo-header-service:5001
     - HOSTEDBY_DOMAIN=http://hosted-by-service:5002
-    - REDIS_URL=redis://redis:6379
 
   redis:
     restart: always

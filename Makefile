@@ -31,7 +31,7 @@ ingress-controller:
 	kubectl wait --namespace=ingress-nginx --for=condition=Ready --timeout=5m pod -l app.kubernetes.io/name=ingress-nginx
 
 deploy:
-	kubectl apply -f k8s
+	kubectl --namespace=default apply -f k8s
 
 destroy:
 	kubectl --namespace=default delete -f k8s

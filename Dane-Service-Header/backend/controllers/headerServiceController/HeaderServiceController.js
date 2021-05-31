@@ -1,5 +1,6 @@
 const router = require('express').Router();
-const client = require('../../redis/client');
+const readClient = require('../../redis/readClient');
+const writeClient = require('../../redis/writeClient');
 const responses = require('../../constants/routeResponses');
 const Response = require('../../constants/Response');
 const ServiceRepository = require('../../repositories/ServiceRepo');
@@ -13,14 +14,14 @@ router.get('/:propertyId', async (req, res) => {
             return;
         }
 
-        client.get(`header${propertyId}`, async (_, data) => {
+        readClient.get(`header${propertyId}`, async (_, data) => {
             if (!data) {
                 const headerData = await repo.getData();
-                client.setex(`header${propertyId}`, 3600, JSON.stringify(headerData));
+                writeClient.setex(`header${propertyId}`, 3600, JSON.stringify(headerData));
                 res.status(200).json(headerData);
             } else {
                 console.log('Retrieved data from Redis store!');
-                res.status(200).json(data);
+                res.status(200).json(JSON.parse(data));
             }
         });
     } catch (error) {
