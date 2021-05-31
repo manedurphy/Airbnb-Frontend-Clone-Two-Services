@@ -40,7 +40,7 @@ Host.init(
         sequelize,
         modelName: 'Host',
         timestamps: false,
-    }
+    },
 );
 
 module.exports = Host;

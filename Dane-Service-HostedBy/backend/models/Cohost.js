@@ -18,7 +18,7 @@ CoHost.init(
         sequelize,
         modelName: 'CoHost',
         timestamps: false,
-    }
+    },
 );
 
 module.exports = CoHost;

@@ -23,6 +23,7 @@ module.exports = class ServiceRepository {
 
             this.data.photos = photos;
         } catch (error) {
+            console.error('[ERROR]: ', error);
             this.data.photos = fallbackData.photos;
         }
     }
@@ -34,7 +35,7 @@ module.exports = class ServiceRepository {
 
             this.data.isSuperhost = data;
         } catch (error) {
-            console.log('ERROR: ', error);
+            console.error('[ERROR]: ', error);
             this.data.isSuperhost = fallbackData.isSuperhost;
         }
     }

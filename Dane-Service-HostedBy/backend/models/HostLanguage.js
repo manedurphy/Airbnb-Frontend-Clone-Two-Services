@@ -18,7 +18,7 @@ HostLanguage.init(
         sequelize,
         modelName: 'HostLanguage',
         timestamps: false,
-    }
+    },
 );
 
 module.exports = HostLanguage;

@@ -14,7 +14,7 @@ Language.init(
         sequelize,
         modelName: 'Language',
         timestamps: false,
-    }
+    },
 );
 
 module.exports = Language;

@@ -31,7 +31,7 @@ HostedBy.init(
         sequelize,
         modelName: 'HostedBy',
         timestamps: false,
-    }
+    },
 );
 
 HostedBy.belongsTo(Host);

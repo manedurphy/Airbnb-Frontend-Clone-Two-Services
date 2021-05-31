@@ -49,7 +49,7 @@ module.exports = class ServiceRepository {
                 throw new Error();
             }
         } catch (error) {
-            console.log('ERROR: ', error);
+            console.log('[ERROR] ', error);
             this.data = fallbackData;
         }
     }

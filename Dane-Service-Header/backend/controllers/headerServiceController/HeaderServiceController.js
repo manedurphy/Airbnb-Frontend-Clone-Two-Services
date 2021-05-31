@@ -13,9 +13,10 @@ router.get('/:propertyId', async (req, res) => {
         }
 
         const headerData = await repo.getData();
-        return res.status(200).json(headerData);
+        res.status(200).json(headerData);
     } catch (error) {
-        return res.status(500).json(new Response(responses.serverError));
+        console.error('[ERROR]: ', error);
+        res.status(500).json(new Response(responses.serverError));
     }
 });
 
