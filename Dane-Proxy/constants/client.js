@@ -1,1 +1,1 @@
-module.exports = require('redis').createClient({ url: 'redis://redis:6379' });
+module.exports = require('redis').createClient({ url: process.env.REDIS_URL });

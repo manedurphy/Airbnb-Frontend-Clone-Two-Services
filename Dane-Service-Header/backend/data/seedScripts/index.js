@@ -15,7 +15,6 @@ const connection = mysql.createConnection({
         await require('./PropertySeed');
         await require('./PhotoSeed');
     } catch (error) {
-        console.log(process.env.HOST);
         console.log('ERROR IN SEEDING SCRIPT', error);
     }
 })();

@@ -12,8 +12,9 @@ services:
     - HOST=photo-header-db
     - MYSQL_USER=root
     - MYSQL_PASSWORD=password
+    - HOSTEDBY_DOMAIN=http://hosted-by-service:5002
     depends_on:
-      - photo-header-db
+    - photo-header-db
 
   hosted-by-service:
     restart: always
@@ -24,7 +25,7 @@ services:
     - 5002:5002
     environment:
     - HOST=hosted-by-db
-    - MYSQL_USERNAME=root
+    - MYSQL_USER=root
     - MYSQL_PASSWORD=password
     depends_on:
     - hosted-by-db
@@ -35,12 +36,13 @@ services:
       context: ./Dane-Proxy
       dockerfile: Dockerfile
     ports:
-    - 80:5000
+    - 5000:5000
     depends_on:
     - redis
     environment: 
     - HEADER_DOMAIN=http://photo-header-service:5001
     - HOSTEDBY_DOMAIN=http://hosted-by-service:5002
+    - REDIS_URL=redis://redis:6379
 
   redis:
     restart: always
@@ -61,7 +63,7 @@ services:
     restart: always
     image: mysql:8.0.25
     environment:
-    -  MYSQL_ROOT_PASSWORD=password
+    - MYSQL_ROOT_PASSWORD=password
     volumes:
     - ./storage/hosted-by-dump:/docker-entrypoint-initdb.d
     - ./data/hosted-by:/var/lib/mysql

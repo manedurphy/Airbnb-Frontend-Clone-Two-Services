@@ -8,8 +8,7 @@ router.get('/:propertyId', async (req, res) => {
     const { propertyId } = req.params;
     const repo = new ServiceRepository(propertyId);
     try {
-        if (propertyId > 100)
-            return res.status(404).json(new Response(responses.notFound));
+        if (propertyId > 100) return res.status(404).json(new Response(responses.notFound));
 
         const hostedBy = await repo.getData();
         return res.status(200).json(hostedBy);
@@ -22,8 +21,7 @@ router.get('/superhost/:id', async (req, res) => {
     try {
         const host = await Host.findByPk(req.params.id);
 
-        if (!host)
-            return res.status(404).json(new Response(responses.hostNotFound));
+        if (!host) return res.status(404).json(new Response(responses.hostNotFound));
 
         return res.status(200).send(host.isSuperhost);
     } catch (error) {

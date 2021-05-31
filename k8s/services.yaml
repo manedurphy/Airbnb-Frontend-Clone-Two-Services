@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy-service
+spec:
+  selector:
+    app: proxy-deploy
+  ports:
+    - protocol: TCP
+      port: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: photo-header-service
+spec:
+  selector:
+    app: photo-header-deploy
+  ports:
+    - protocol: TCP
+      port: 5001
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hosted-by-service
+spec:
+  selector:
+    app: hosted-by-deploy
+  ports:
+    - protocol: TCP
+      port: 5002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+spec:
+  selector:
+    app: redis-deploy
+  ports:
+    - protocol: TCP
+      port: 6379

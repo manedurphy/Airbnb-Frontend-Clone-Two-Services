@@ -1,4 +1,4 @@
-// const axios = require('axios');
+const axios = require('axios');
 const fallbackData = require('../data/fallbackData');
 const Photo = require('../models/Photo');
 const Property = require('../models/Property');
@@ -27,8 +27,21 @@ module.exports = class ServiceRepository {
         }
     }
 
+    async getSuperhostStatus() {
+        try {
+            const { hostId } = await Property.findByPk(this.id);
+            const { data } = await axios.get(`${process.env.HOSTEDBY_DOMAIN}/api/hostedbyService/superhost/${hostId}`);
+
+            this.data.isSuperhost = data;
+        } catch (error) {
+            console.log('ERROR: ', error);
+            this.data.isSuperhost = fallbackData.isSuperhost;
+        }
+    }
+
     async getData() {
         await this.getPhotos();
+        await this.getSuperhostStatus();
         return this.data;
     }
 };

@@ -9,8 +9,7 @@ router.get('/entire-house/:propertyId', async (req, res) => {
     try {
         const hostInfo = await repo.getData();
 
-        if (!hostInfo)
-            return res.status(404).json(new Response(responses.entireHouse));
+        if (!hostInfo) return res.status(404).json(new Response(responses.entireHouse));
 
         const { name, avatar, isSuperhost } = hostInfo;
         return res.status(200).json({ name, avatar, isSuperhost });
