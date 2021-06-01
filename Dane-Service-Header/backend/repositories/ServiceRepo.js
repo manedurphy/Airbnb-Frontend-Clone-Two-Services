@@ -14,6 +14,18 @@ module.exports = class ServiceRepository {
         };
     }
 
+    createProperty(data) {
+        return Property.create(data);
+    }
+
+    async createPhotos(data) {
+        for (let i = 0; i < data.length; i++) {
+            await Photo.create(data[i]);
+        }
+
+        return;
+    }
+
     async getPhotos() {
         try {
             const photos = await Photo.findAll({
@@ -21,9 +33,11 @@ module.exports = class ServiceRepository {
                 include: [{ model: Property }],
             });
 
+            console.log(photos);
+
             this.data.photos = photos;
         } catch (error) {
-            console.error('[ERROR]: ', error);
+            console.error('[ERROR]', error);
             this.data.photos = fallbackData.photos;
         }
     }

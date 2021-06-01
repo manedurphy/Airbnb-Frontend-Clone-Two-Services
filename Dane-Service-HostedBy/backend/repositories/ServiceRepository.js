@@ -1,4 +1,3 @@
-const fallbackData = require('../data/fallbackData');
 const Host = require('../models/Host');
 const CoHost = require('../models/Cohost');
 const HostedBy = require('../models/HostedBy');
@@ -12,46 +11,37 @@ module.exports = class ServiceRepository {
     }
 
     async getHostedByInfo() {
-        try {
-            const hostedBy = await HostedBy.findOne({
-                where: { PropertyId: this.id },
-                include: [
-                    {
-                        model: Host,
-                        include: [
-                            {
-                                model: HostLanguage,
-                                attributes: ['LanguageId'],
-                                include: [
-                                    {
-                                        model: Language,
-                                        attributes: ['name'],
-                                    },
-                                ],
-                            },
-                        ],
-                    },
-                    {
-                        model: CoHost,
-                        include: [
-                            {
-                                model: Host,
-                                attributes: ['name', 'avatar'],
-                            },
-                        ],
-                    },
-                ],
-            });
+        const hostedBy = await HostedBy.findOne({
+            where: { PropertyId: this.id },
+            include: [
+                {
+                    model: Host,
+                    include: [
+                        {
+                            model: HostLanguage,
+                            attributes: ['LanguageId'],
+                            include: [
+                                {
+                                    model: Language,
+                                    attributes: ['name'],
+                                },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    model: CoHost,
+                    include: [
+                        {
+                            model: Host,
+                            attributes: ['name', 'avatar'],
+                        },
+                    ],
+                },
+            ],
+        });
 
-            if (hostedBy) {
-                this.data = hostedBy;
-            } else {
-                throw new Error();
-            }
-        } catch (error) {
-            console.log('[ERROR] ', error);
-            this.data = fallbackData;
-        }
+        this.data = hostedBy;
     }
 
     async getData() {

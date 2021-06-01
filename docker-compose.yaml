@@ -9,9 +9,10 @@ services:
     ports:
     - 5001:5001
     environment:
-    - HOST=photo-header-db
+    - HOST=photo-header
     - MYSQL_USER=root
     - MYSQL_PASSWORD=password
+    - DB=photo-header
     - HOSTEDBY_DOMAIN=http://hosted-by-service:5002
     - REDIS_READ_URL=redis://redis:6379
     - REDIS_WRITE_URL=redis://redis:6379
@@ -29,6 +30,7 @@ services:
     - HOST=hosted-by-db
     - MYSQL_USER=root
     - MYSQL_PASSWORD=password
+    - DB=hosted-by
     - REDIS_READ_URL=redis://redis:6379
     - REDIS_WRITE_URL=redis://redis:6379
     depends_on:

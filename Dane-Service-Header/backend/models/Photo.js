@@ -5,28 +5,29 @@ const Property = require('./Property');
 class Photo extends Model {}
 
 Photo.init(
-	{
-		link: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		isMain: {
-			type: DataTypes.BOOLEAN,
-			allowNull: false,
-		},
-		description: {
-			type: DataTypes.STRING,
-			allowNull: false,
-		},
-		PropertyId: {
-			type: DataTypes.INTEGER,
-			allowNull: false,
-		},
-	},
-	{
-		sequelize,
-		modelName: 'Photo',
-	}
+    {
+        link: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        isMain: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
+        },
+        description: {
+            type: DataTypes.STRING,
+            allowNull: false,
+        },
+        PropertyId: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+    },
+    {
+        sequelize,
+        modelName: 'Photo',
+    },
 );
 
 Photo.belongsTo(Property);
