@@ -1,10 +1,10 @@
 require('./models/relationships');
 const express = require('express');
-const hostedByRoutes = require('./controllers/hostedByController');
-const { join } = require('path');
+const join = require('path').join;
 
 const app = express();
 const publicPath = join(__dirname, '..', 'frontend', 'public', 'index.html');
+const hostedByRoutes = require('./controllers/hostedByController');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

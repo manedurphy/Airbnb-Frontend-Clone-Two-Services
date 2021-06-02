@@ -5,6 +5,8 @@ const responses = require('../constants/routeResponses');
 const Host = require('../models/Host');
 const Response = require('../constants/Response');
 const ServiceRepository = require('../repositories/ServiceRepository');
+const HostRepository = require('../repositories/HostRepository');
+const HostedByRepository = require('../repositories/HostedByRepository');
 
 router.get('/:propertyId', async (req, res) => {
     const { propertyId } = req.params;
@@ -42,7 +44,29 @@ router.get('/superhost/:id', async (req, res) => {
 
         res.status(200).send(host.isSuperhost);
     } catch (error) {
-        console.error('[ERROR] ', error);
+        console.error('[ERROR]', error);
+        res.status(500).json(new Response(responses.serverError));
+    }
+});
+
+router.post('/host', async (req, res) => {
+    const repo = new HostRepository(req.body);
+    try {
+        await repo.createHost();
+        res.status(201).json(new Response(responses.hostedCreated));
+    } catch (error) {
+        console.error('[ERROR]', error);
+        res.status(500).json(new Response(responses.serverError));
+    }
+});
+
+router.post('/hostedByRecord', async (req, res) => {
+    const repo = new HostedByRepository(req.body);
+    try {
+        await repo.createHostedByRecord();
+        res.status(201).json(new Response(responses.hostedbyCreated));
+    } catch (error) {
+        console.error('[ERROR]', error);
         res.status(500).json(new Response(responses.serverError));
     }
 });

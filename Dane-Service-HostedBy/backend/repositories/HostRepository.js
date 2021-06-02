@@ -1,0 +1,33 @@
+const Host = require('../models/Host');
+const Language = require('../models/Language');
+const HostLanguage = require('../models/HostLanguage');
+
+class HostRepository {
+    constructor(data) {
+        this.data = data;
+    }
+
+    createLanguage(language) {
+        return Language.create(language);
+    }
+
+    async createHost() {
+        const host = await Host.create(this.data);
+        const languages = this.data.languages;
+
+        for (let i = 0; i < languages.length; i++) {
+            let language = await Language.findOne({ where: { name: languages[i] } });
+
+            if (!language) {
+                language = await this.createLanguage({ name: languages[i] });
+            }
+
+            await HostLanguage.create({
+                HostId: host.getDataValue('id'),
+                LanguageId: language.getDataValue('id'),
+            });
+        }
+    }
+}
+
+module.exports = HostRepository;

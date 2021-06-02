@@ -1,5 +1,5 @@
-const { DataTypes, Model } = require('sequelize');
 const sequelize = require('../data/db');
+const { DataTypes, Model } = require('sequelize');
 
 class HostLanguage extends Model {}
 

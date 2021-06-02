@@ -9,6 +9,11 @@ Host.init(
             type: DataTypes.STRING,
             allowNull: false,
         },
+        email: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            unique: true,
+        },
         about: {
             type: DataTypes.STRING(1000),
             allowNull: false,
@@ -16,6 +21,7 @@ Host.init(
         numberOfReviews: {
             type: DataTypes.BIGINT,
             allowNull: false,
+            defaultValue: 0,
         },
         identityVerified: {
             type: DataTypes.BOOLEAN,
@@ -34,6 +40,7 @@ Host.init(
         joinedOn: {
             type: DataTypes.DATE,
             allowNull: false,
+            defaultValue: new Date(),
         },
     },
     {
