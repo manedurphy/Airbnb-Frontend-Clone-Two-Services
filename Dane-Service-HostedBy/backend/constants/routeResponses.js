@@ -6,4 +6,5 @@ module.exports = {
     hostedCreated: 'Host created',
     languageCreated: 'Language created',
     hostedbyCreated: 'HostedBy record created',
+    emailExists: 'Host with that email already exists',
 };

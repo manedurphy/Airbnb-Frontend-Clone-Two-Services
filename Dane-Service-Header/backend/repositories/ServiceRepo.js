@@ -33,8 +33,6 @@ module.exports = class ServiceRepository {
                 include: [{ model: Property }],
             });
 
-            console.log(photos);
-
             this.data.photos = photos;
         } catch (error) {
             console.error('[ERROR]', error);

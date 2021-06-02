@@ -9,7 +9,7 @@ services:
     ports:
     - 5001:5001
     environment:
-    - HOST=photo-header
+    - HOST=photo-header-db
     - MYSQL_USER=root
     - MYSQL_PASSWORD=password
     - DB=photo-header
@@ -52,23 +52,25 @@ services:
   redis:
     restart: always
     image: redis:6.2.3-alpine
-    ports:
-    - 6379:6379
+    # ports:
+    # - 6379:6379
 
   photo-header-db:
     restart: always
     image: mysql:8.0.25
     environment:
-    -  MYSQL_ROOT_PASSWORD=password
-    volumes:
-    - ./storage/photo-header-dump:/docker-entrypoint-initdb.d
-    - ./data/photo-header:/var/lib/mysql
+    - MYSQL_ROOT_PASSWORD=password
+    - MYSQL_DATABASE=photo-header
+    # volumes:
+    # - ./storage/photo-header-dump:/docker-entrypoint-initdb.d
+    # - ./data/photo-header:/var/lib/mysql
 
   hosted-by-db:
     restart: always
     image: mysql:8.0.25
     environment:
     - MYSQL_ROOT_PASSWORD=password
-    volumes:
-    - ./storage/hosted-by-dump:/docker-entrypoint-initdb.d
-    - ./data/hosted-by:/var/lib/mysql
+    - MYSQL_DATABASE=hosted-by
+    # volumes:
+    # - ./storage/hosted-by-dump:/docker-entrypoint-initdb.d
+    # - ./data/hosted-by:/var/lib/mysql

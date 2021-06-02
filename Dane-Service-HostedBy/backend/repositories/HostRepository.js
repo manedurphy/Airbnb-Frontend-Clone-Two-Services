@@ -12,21 +12,29 @@ class HostRepository {
     }
 
     async createHost() {
-        const host = await Host.create(this.data);
-        const languages = this.data.languages;
+        const existingHost = await Host.findOne({ where: { email: this.data.email } });
 
-        for (let i = 0; i < languages.length; i++) {
-            let language = await Language.findOne({ where: { name: languages[i] } });
+        if (!existingHost) {
+            const host = await Host.create(this.data);
+            const languages = this.data.languages;
 
-            if (!language) {
-                language = await this.createLanguage({ name: languages[i] });
+            for (let i = 0; i < languages.length; i++) {
+                let language = await Language.findOne({ where: { name: languages[i] } });
+
+                if (!language) {
+                    language = await this.createLanguage({ name: languages[i] });
+                }
+
+                await HostLanguage.create({
+                    HostId: host.getDataValue('id'),
+                    LanguageId: language.getDataValue('id'),
+                });
             }
 
-            await HostLanguage.create({
-                HostId: host.getDataValue('id'),
-                LanguageId: language.getDataValue('id'),
-            });
+            return true;
         }
+
+        return false;
     }
 }
 

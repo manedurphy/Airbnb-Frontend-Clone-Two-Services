@@ -1,0 +1,1 @@
+aws s3api create-bucket --bucket fec-corgis --region us-east-1
