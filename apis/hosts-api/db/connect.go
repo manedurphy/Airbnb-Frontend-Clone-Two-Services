@@ -10,7 +10,7 @@ import (
 var MySqlDb *gorm.DB
 
 func Connect() {
-	dsn := os.Getenv("MYSQL_USER") + ":" + os.Getenv("MYSQL_PASSWORD") + "@/" + os.Getenv("MYSQL_DB")
+	dsn := os.Getenv("MYSQL_USER") + ":" + os.Getenv("MYSQL_PASSWORD") + "@tcp(" + os.Getenv("HOST") + ")/" + os.Getenv("MYSQL_DB")
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {

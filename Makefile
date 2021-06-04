@@ -10,7 +10,19 @@ airbnb-client-image:
 proxy-image:
 	cd Dane-Proxy && docker build -t proxy-service -f Dockerfile.prod .
 
-build: photo-header-image hosted-by-image proxy-image
+hosts-image:
+	cd apis/hosts-api && go build -o hosts-api .
+	cd apis/hosts-api && docker build -t hosts-api .    
+
+properties-image:
+	cd apis/properties-api && go build -o properties-api .
+	cd apis/properties-api && docker build -t properties-api . 
+
+client:
+	yarn run build:local
+
+# build: photo-header-image hosted-by-image proxy-image
+build: client hosts-image properties-image proxy-image
 
 docker-push: build
 	docker tag photo-header-service manedurphy/photo-header-service
