@@ -96,6 +96,26 @@ func GetHost(c *gin.Context) {
 	})
 }
 
+func GetSuperhostStatus(c *gin.Context) {
+
+	hostId := c.Param("hostId")
+
+	var host db.Host
+	result := db.MySqlDb.Where("id = ?", hostId).First(&host)
+
+	if result.Error != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "could not find host",
+		})
+
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"isSuperhost": host.IsSuperhost,
+	})
+}
+
 type Cohost struct {
 	ID         string `json:"id"`
 	HostId     string `json:"hostId"`

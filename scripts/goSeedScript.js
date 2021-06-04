@@ -36,14 +36,13 @@ Promise.all(languageRequests).then(() => {
 
         responses.forEach((res) => hosts.push(res.data));
 
-        for (let i = 0; i < 25; i++) {
+        for (let i = 0; i < hosts.length; i++) {
             const hostId = hosts[Math.floor(Math.random() * hosts.length)].host.ID;
 
             createPropertyRequests.push(
                 axios.post(`${propertiesAPI}/api/properties/create-property`, {
                     title: faker.lorem.sentence(),
-                    rating: 0,
-                    numberOfReviews: 0,
+                    numberOfReviews: Math.floor(Math.random() * 200),
                     duringYourStay: faker.lorem.sentence(),
                     city: faker.address.city(),
                     state: faker.address.state(),

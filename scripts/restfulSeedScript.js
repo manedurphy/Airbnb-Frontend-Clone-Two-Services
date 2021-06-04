@@ -40,6 +40,8 @@ async function seedDatabases() {
             identityVerified: Math.random() < 0.5 ? true : false,
             isSuperhost: Math.random() < 0.5 ? true : false,
             numberOfReviews: Math.floor(Math.random() * 200),
+            responseTime: Math.floor(Math.random() * 168), // max hours within a week
+            responseRate: Math.floor(Math.random() * 100),
             about: faker.lorem.sentences(),
             avatar: `https://randomuser.me/api/portraits/${Math.random() < 0.5 ? 'men' : 'women'}/${i}.jpg`,
             languages: generateLanguages(),

@@ -1,7 +1,9 @@
 package property
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -120,6 +122,10 @@ func GetCohosts(c *gin.Context) {
 	})
 }
 
+type GetSuperhostStatusResponse struct {
+	IsSuperhost bool `json:"isSuperhost"`
+}
+
 func GetPhotoHeaderData(c *gin.Context) {
 	roomNumber := c.Param("roomNumber")
 
@@ -138,16 +144,32 @@ func GetPhotoHeaderData(c *gin.Context) {
 	db.MySqlDb.Find(&photos, "property_id = ?", property.ID)
 
 	reviews := Reviews{
-		NumberOfReviews: 50,
+		NumberOfReviews: property.NumberOfReviews,
 		Rating:          4.28,
 	}
+
+	isSuperhostResp, err := http.Get(os.Getenv("HOSTS_API") + "/api/hosts/isSuperhost/" + property.HostId.String())
+	if err != nil {
+		panic(err)
+	}
+
+	var isSuperhost GetSuperhostStatusResponse
+
+	body, err := io.ReadAll(isSuperhostResp.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	defer isSuperhostResp.Body.Close()
+
+	json.Unmarshal(body, &isSuperhost)
 
 	resp := GetPhotoHeaderDataResponse{}
 
 	resp.Location.City = property.City
 	resp.Location.State = property.State
 	resp.Location.Country = property.Country
-	resp.IsSuperhost = true
+	resp.IsSuperhost = isSuperhost.IsSuperhost
 	resp.Photos = photos
 	resp.Reviews = reviews
 	resp.Title = property.Title
