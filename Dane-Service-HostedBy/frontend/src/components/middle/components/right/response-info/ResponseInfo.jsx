@@ -7,10 +7,10 @@ const ResponseInfo = ({ time, rate, languages }) => (
         <ResponseInfoItem className={'font'}>
             {languages.length > 1
                 ? `Languages: ${languages
-                      .map((language) => language.Language.name)
+                      .map((language) => language.name)
                       .join(', ')}`
                 : languages.length === 1
-                ? `Language: ${languages[0].Language.name}`
+                ? `Language: ${languages[0].name}`
                 : null}
         </ResponseInfoItem>
         <ResponseInfoItem className={'font'}>

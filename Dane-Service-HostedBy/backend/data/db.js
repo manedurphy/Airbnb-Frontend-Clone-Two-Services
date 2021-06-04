@@ -6,6 +6,7 @@ const sequelize = new Sequelize(process.env.DB, process.env.MYSQL_USER, process.
     logging: false,
 });
 
-sequelize.sync({ force: true });
+sequelize.sync();
+// sequelize.sync({ force: true });
 
 module.exports = sequelize;

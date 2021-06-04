@@ -25,32 +25,32 @@ const hostedBySlice = createSlice({
         setHostedByState: (state, action) => {
             return {
                 ...state,
-                duringYourStay: action.payload.duringYourStay,
-                responseTime: action.payload.responseTime,
-                responseRate: action.payload.responseRate,
+                coHosts: action.payload.cohosts,
+                responseTime: action.payload.host.responseTime,
+                responseRate: action.payload.host.responseRate,
                 host: {
-                    name: action.payload.Host.name,
-                    languages: action.payload.Host.HostLanguages,
-                    about: action.payload.Host.about,
-                    numberOfReviews: action.payload.Host.numberOfReviews,
-                    identityVerified: action.payload.Host.identityVerified,
-                    isSuperhost: action.payload.Host.isSuperhost,
-                    avatar: action.payload.Host.avatar,
-                    joinedOn: action.payload.Host.joinedOn,
+                    ...state.host,
+                    name: action.payload.host.firstName,
+                    about: action.payload.host.about,
+                    numberOfReviews: action.payload.host.numberOfReviews,
+                    identityVerified: action.payload.host.identityVerified,
+                    isSuperhost: action.payload.host.isSuperhost,
+                    avatar: action.payload.host.avatar,
+                    languages: action.payload.languages,
+                    joinedOn: Date.now(),
                 },
-                coHosts: action.payload.CoHosts,
             };
         },
     },
 });
 
-export const { setHostedByState } = hostedBySlice.actions;
+export const { setHostedByState, setAltData } = hostedBySlice.actions;
 export const getHostedByState = (state) => state.hostedBy;
 
 export const handleGetHostedByData = (id) => async (dispatch) => {
     try {
-        const hostedBy = await getHostedByData(id);
-        dispatch(setHostedByState(hostedBy));
+        const hostedByData = await getHostedByData(id);
+        dispatch(setHostedByState(hostedByData));
     } catch (error) {
         console.log('ERROR GETTING DATA', error);
     }

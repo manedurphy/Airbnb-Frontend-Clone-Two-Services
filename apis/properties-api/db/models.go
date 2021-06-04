@@ -7,12 +7,12 @@ import (
 type Property struct {
 	ID              uuid.UUID `gorm:"primaryKey" json:"id"`
 	Title           string    `json:"title"`
-	Rating          float64   `json:"rating"` // can be calculated instead
 	NumberOfReviews int       `json:"numberOfReviews"`
 	DuringYourStay  string    `json:"duringYourStay"`
 	City            string    `json:"city"`
 	State           string    `json:"state"`
 	Country         string    `json:"country"`
+	RoomNumber      int       `json:"roomNumber" gorm:"index;autoIncrement"`
 	HostId          uuid.UUID `json:"hostId"`
 }
 

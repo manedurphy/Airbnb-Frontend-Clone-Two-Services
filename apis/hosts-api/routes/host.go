@@ -1,7 +1,11 @@
 package host
 
 import (
+	"encoding/json"
 	"hosts-api/db"
+	"io"
+	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -89,6 +93,67 @@ func GetHost(c *gin.Context) {
 
 	c.JSON(200, gin.H{
 		"host": host,
+	})
+}
+
+type Cohost struct {
+	ID         string `json:"id"`
+	HostId     string `json:"hostId"`
+	PropertyId string `json:"propertyId"`
+}
+
+type GetCohostsResponse struct {
+	DuringYourStay string   `json:"duringYourStay"`
+	Cohosts        []Cohost `json:"cohosts"`
+	HostId         string   `json:"hostId"`
+}
+
+func GetHostedByData(c *gin.Context) {
+	roomNumber := c.Param("roomNumber")
+	resp, err := http.Get(os.Getenv("PROPERTIES_API") + "/api/properties/cohosts/" + roomNumber)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if resp.StatusCode == 404 {
+		c.JSON(resp.StatusCode, gin.H{
+			"message": "property could not be found",
+		})
+		return
+	}
+
+	hostedByReponse := GetCohostsResponse{}
+	body, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	if err != nil {
+		panic(err)
+	}
+
+	json.Unmarshal(body, &hostedByReponse)
+
+	var cohosts []db.Host
+	for _, cohost := range hostedByReponse.Cohosts {
+		var ch db.Host
+		db.MySqlDb.Where("id = ?", cohost.HostId).First(&ch)
+		cohosts = append(cohosts, ch)
+	}
+
+	var host db.Host
+	db.MySqlDb.Where("id = ?", hostedByReponse.HostId).First(&host)
+
+	var hostLanguageRelationship db.HostLanguageRelationship
+	db.MySqlDb.Where("host_id = ?", host.ID).First(&hostLanguageRelationship)
+
+	var languages []db.Language
+	db.MySqlDb.Where("id = ?", hostLanguageRelationship.LanguageId).Find(&languages)
+
+	c.JSON(resp.StatusCode, gin.H{
+		"cohosts":        cohosts,
+		"host":           host,
+		"duringYourStay": hostedByReponse.DuringYourStay,
+		"languages":      languages,
 	})
 }
 

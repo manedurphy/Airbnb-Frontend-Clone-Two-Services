@@ -23,6 +23,7 @@ const headerServiceSlice = createSlice({
             isSuperhost: false,
         },
         loading: true,
+        title: '',
     },
     reducers: {
         setPhotos: (state, action) => {
@@ -94,21 +95,14 @@ const headerServiceSlice = createSlice({
                     isSuperhost: action.payload.isSuperhost,
                 },
                 loading: false,
+                title: action.payload.title,
             };
         },
     },
 });
 
-export const {
-    setPhotos,
-    setCurrentPhoto,
-    setGroups,
-    setReviews,
-    setLocation,
-    setHost,
-    setState,
-    setLoading,
-} = headerServiceSlice.actions;
+export const { setPhotos, setCurrentPhoto, setGroups, setReviews, setLocation, setHost, setState, setLoading } =
+    headerServiceSlice.actions;
 
 export const getHeaderState = (state) => state.header;
 export const getPhotoState = (state) => state.header.photos;

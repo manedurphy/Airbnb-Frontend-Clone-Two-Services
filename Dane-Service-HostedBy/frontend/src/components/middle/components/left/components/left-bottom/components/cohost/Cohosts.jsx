@@ -13,8 +13,8 @@ const Cohosts = (props) => (
             {props.cohosts.map((cohost, i) => {
                 return (
                     <CohostContainer key={i}>
-                        <CohostImg src={cohost.Host.avatar} />
-                        <CohostName>{cohost.Host.name}</CohostName>
+                        <CohostImg src={cohost.avatar} />
+                        <CohostName>{cohost.firstName}</CohostName>
                     </CohostContainer>
                 );
             })}

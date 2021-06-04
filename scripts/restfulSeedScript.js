@@ -51,16 +51,15 @@ async function seedDatabases() {
         };
 
         await axios.post(`${process.env.PUBLIC_IP}/api/hostedbyService/host`, host);
-
         await axios.post(`${process.env.PUBLIC_IP}/api/headerService/property`, property);
 
         const photos = [];
 
-        for (let j = 1 * i + 1; j <= 10 * i; j++) {
+        for (let j = 1 * 10 + i; j <= 10 + 10 * i; j++) {
             photos.push({
                 link: `https://fec-corgis.s3.amazonaws.com/houses/images/${j}`,
                 description: faker.lorem.sentence(),
-                PropertyId: i,
+                PropertyId: i + 1,
             });
         }
 

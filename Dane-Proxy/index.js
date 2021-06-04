@@ -5,10 +5,10 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 if (process.env.NODE_ENV === 'development') {
-    const headerRoutes = require('./routes/headerRoutes');
-    const hostedbyRoutes = require('./routes/hostedbyRoutes');
-    app.use(...headerRoutes);
-    app.use(...hostedbyRoutes);
+    const propertiesRoutes = require('./routes/propertiesRoutes');
+    const hostsRoutes = require('./routes/hostsRoutes');
+    app.use(...propertiesRoutes);
+    app.use(...hostsRoutes);
 }
 
 app.get('/header.bundle.js', (req, res) => {

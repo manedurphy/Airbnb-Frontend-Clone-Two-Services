@@ -17,9 +17,9 @@ func Connect() {
 		panic(err)
 	}
 
-	db.Exec(`DROP TABLE IF EXISTS properties.properties;`)
-	db.Exec(`DROP TABLE IF EXISTS properties.cohosts;`)
-	db.Exec(`DROP TABLE IF EXISTS properties.photos;`)
+	// db.Exec(`DROP TABLE IF EXISTS properties.properties;`)
+	// db.Exec(`DROP TABLE IF EXISTS properties.cohosts;`)
+	// db.Exec(`DROP TABLE IF EXISTS properties.photos;`)
 	db.AutoMigrate(&Property{}, &Cohost{}, &Photo{})
 	MySqlDb = db
 }

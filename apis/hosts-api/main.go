@@ -13,6 +13,7 @@ func main() {
 
 	router.GET("/api/hosts/healthz", healthCheck)
 	router.GET("/api/hosts", host.GetHost)
+	router.GET("/api/hosts/hosted-by/:roomNumber", host.GetHostedByData)
 	router.POST("/api/hosts/create-host", host.CreateHost)
 	router.POST("/api/hosts/create-language", host.CreateLanguage)
 	router.Run()

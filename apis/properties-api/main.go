@@ -12,6 +12,8 @@ func main() {
 	db.Connect()
 
 	router.GET("/api/properties/healthz", healthCheck)
+	router.GET("/api/properties/:roomNumber", property.GetPhotoHeaderData)
+	router.GET(("/api/properties/cohosts/:roomNumber"), property.GetCohosts)
 	router.POST("/api/properties/create-property", property.CreateProperty)
 	router.POST("/api/properties/create-photos", property.CreatePhotos)
 	router.Run(":8081")

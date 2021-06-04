@@ -17,9 +17,9 @@ func Connect() {
 		panic(err)
 	}
 
-	db.Exec(`DROP TABLE IF EXISTS hosts.hosts`)
-	db.Exec(`DROP TABLE IF EXISTS hosts.languages`)
-	db.Exec(`DROP TABLE IF EXISTS hosts.host_language_relationships`)
+	// db.Exec(`DROP TABLE IF EXISTS hosts.hosts`)
+	// db.Exec(`DROP TABLE IF EXISTS hosts.languages`)
+	// db.Exec(`DROP TABLE IF EXISTS hosts.host_language_relationships`)
 	db.AutoMigrate(&Host{}, &Language{}, &HostLanguageRelationship{})
 
 	MySqlDb = db
