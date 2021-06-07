@@ -97,7 +97,6 @@ func GetHost(c *gin.Context) {
 }
 
 func GetSuperhostStatus(c *gin.Context) {
-
 	hostId := c.Param("hostId")
 
 	var host db.Host
@@ -130,7 +129,7 @@ type GetCohostsResponse struct {
 
 func GetHostedByData(c *gin.Context) {
 	roomNumber := c.Param("roomNumber")
-	resp, err := http.Get(os.Getenv("PROPERTIES_API") + "/api/properties/cohosts/" + roomNumber)
+	resp, err := http.Get(os.Getenv("PROPERTIES_API") + "/properties/cohosts/" + roomNumber)
 
 	if err != nil {
 		panic(err)
@@ -200,6 +199,7 @@ func setProps(h *db.Host, req *CreateHostRequest) {
 	h.NumberOfReviews = req.NumberOfReviews
 	h.IdentityVerified = req.IdentityVerified
 	h.IsSuperhost = req.IsSuperhost
+	h.JoinedOn = req.JoinedOn
 }
 
 func checkForExistingHost(email string) bool {

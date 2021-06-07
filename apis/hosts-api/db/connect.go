@@ -22,6 +22,7 @@ func Connect() {
 		panic(err)
 	}
 
+	// if os.Getenv("DROP_TABLES") == "true" {
 	if *drop {
 		db.Exec(`DROP TABLE IF EXISTS hosts.hosts`)
 		db.Exec(`DROP TABLE IF EXISTS hosts.languages`)
@@ -30,5 +31,4 @@ func Connect() {
 
 	db.AutoMigrate(&Host{}, &Language{}, &HostLanguageRelationship{})
 	MySqlDb = db
-
 }

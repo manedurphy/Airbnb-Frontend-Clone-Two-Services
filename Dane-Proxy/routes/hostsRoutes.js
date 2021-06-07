@@ -1,8 +1,9 @@
 const { createProxyMiddleware } = require('http-proxy-middleware');
 
 module.exports = [
-    '/api/hosts/hosted-by/:roomNumber',
+    '/api/hosted-by/:roomNumber',
     createProxyMiddleware({
-        target: process.env.HOSTS_API,
+        // target: process.env.HOSTS_API,
+        target: process.env.GET_DATA_API,
     }),
 ];

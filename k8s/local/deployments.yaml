@@ -1,0 +1,176 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: proxy-deploy
+  name: proxy-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy-deploy
+  template:
+    metadata:
+      labels:
+        app: proxy-deploy
+    spec:
+      containers:
+      - image: local/proxy-service
+        imagePullPolicy: Never
+        name: proxy-service
+        env:
+        - name: HOSTS_API
+          value: http://hosts-service:8080
+        - name: PROPERTIES_API
+          value: http://properties-service:8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis-read-deploy
+  name: redis-read-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-read-deploy
+  template:
+    metadata:
+      labels:
+        app: redis-read-deploy
+    spec:
+      containers:
+      - image: redis:6.2.3-alpine
+        name: redis
+        command:
+          - "redis-server"
+        args:
+          - "--replicaof"
+          - "redis-write-service.default.svc.cluster.local"
+          - "6379"
+          - "--protected-mode"
+          - "no" 
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis-write-deploy
+  name: redis-write-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis-write-deploy
+  template:
+    metadata:
+      labels:
+        app: redis-write-deploy
+    spec:
+      containers:
+      - image: redis:6.2.3-alpine
+        name: redis
+        command:
+          - "redis-server"
+        args:
+          - "--protected-mode"
+          - "no"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: properties-api-deploy
+  name: properties-api-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: properties-api-deploy
+  template:
+    metadata:
+      labels:
+        app: properties-api-deploy
+    spec:
+      containers:
+      - image: local/properties-api
+        imagePullPolicy: Never
+        name: properties-api
+        env:
+        - name: HOST
+          value: properties-dev-sb.czsnmstr0khj.us-east-1.rds.amazonaws.com
+        - name: MYSQL_USER
+          value: manedurphy
+        - name: MYSQL_PASSWORD
+          value: password
+        - name: HOSTS_API
+          value: http://hosts-api-service:8080
+        - name: MYSQL_DB
+          value: properties
+        - name: DROP_TABLES
+          value: "true"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hosts-api-deploy
+  name: hosts-api-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hosts-api-deploy
+  template:
+    metadata:
+      labels:
+        app: hosts-api-deploy
+    spec:
+      containers:
+      - image: local/hosts-api
+        imagePullPolicy: Never
+        name: hosts-api
+        env:
+        - name: HOST
+          value: hosts-dev-db.czsnmstr0khj.us-east-1.rds.amazonaws.com
+        - name: MYSQL_USER
+          value: manedurphy
+        - name: MYSQL_PASSWORD
+          value: password
+        - name: MYSQL_DB
+          value: hosts
+        - name: DROP_TABLES
+          value: "true"
+        - name: PROPERTIES_API
+          value: http://properties-api-service:8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: get-data-api-deploy
+  name: get-data-api-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: get-data-api-deploy
+  template:
+    metadata:
+      labels:
+        app: get-data-api-deploy
+    spec:
+      containers:
+      - image: local/get-data-api
+        imagePullPolicy: Never
+        name: get-data-api
+        env:
+        - name: REDIS_READ_URL
+          value: redis-read-service:6379
+        - name: REDIS_WRITE_URL
+          value: redis-write-service:6379
+        - name: HOSTS_API
+          value: http://hosts-api-service:8080
+        - name: PROPERTIES_API
+          value: http://properties-api-service:8081

@@ -51,15 +51,15 @@ func CreateProperty(c *gin.Context) {
 	p := db.Property{}
 	setProps(&p, req)
 
-	err := confirmHostExists(p.HostId)
+	// err := confirmHostExists(p.HostId)
 
-	if err != nil {
-		c.JSON(404, gin.H{
-			"message": err.Error(),
-		})
+	// if err != nil {
+	// 	c.JSON(404, gin.H{
+	// 		"message": err.Error(),
+	// 	})
 
-		return
-	}
+	// 	return
+	// }
 
 	db.MySqlDb.Create(&p)
 
@@ -148,7 +148,7 @@ func GetPhotoHeaderData(c *gin.Context) {
 		Rating:          4.28,
 	}
 
-	isSuperhostResp, err := http.Get(os.Getenv("HOSTS_API") + "/api/hosts/isSuperhost/" + property.HostId.String())
+	isSuperhostResp, err := http.Get(os.Getenv("HOSTS_API") + "/hosts/isSuperhost/" + property.HostId.String())
 	if err != nil {
 		panic(err)
 	}
@@ -206,7 +206,7 @@ func createCohost(cohostId uuid.UUID, propertyId uuid.UUID) {
 
 func confirmHostExists(hostId uuid.UUID) error {
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", os.Getenv("HOSTS_API")+"/api/hosts", nil)
+	request, _ := http.NewRequest("GET", os.Getenv("HOSTS_API")+"/hosts", nil)
 	request.Header.Set("host_id", hostId.String())
 
 	resp, _ := client.Do(request)

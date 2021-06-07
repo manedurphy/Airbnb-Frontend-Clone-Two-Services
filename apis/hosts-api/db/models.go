@@ -16,6 +16,7 @@ type Host struct {
 	NumberOfReviews  int       `json:"numberOfReviews"`
 	IdentityVerified bool      `json:"identityVerified"`
 	IsSuperhost      bool      `json:"isSuperhost"`
+	JoinedOn         string    `json:"joinedOn"`
 }
 
 type Language struct {

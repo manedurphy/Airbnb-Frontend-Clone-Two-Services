@@ -22,6 +22,7 @@ func Connect() {
 		panic(err)
 	}
 
+	// if os.Getenv("DROP_TABLES") == "true" {
 	if *drop {
 		db.Exec(`DROP TABLE IF EXISTS properties.properties;`)
 		db.Exec(`DROP TABLE IF EXISTS properties.cohosts;`)

@@ -1,1 +1,1 @@
-aws s3api create-bucket --bucket fec-corgis --region us-east-1
+aws s3api create-bucket --bucket airbnb-clone-photos --region us-east-1

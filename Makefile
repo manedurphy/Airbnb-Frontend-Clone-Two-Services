@@ -1,12 +1,3 @@
-photo-header-image:
-	cd Dane-Service-Header && docker build -t photo-header-service .
-
-hosted-by-image:
-	cd Dane-Service-HostedBy && docker build -t hosted-by-service .
-
-airbnb-client-image:
-	docker build -t airbnb-client-service -f ./Dockerfile .
-
 proxy-image:
 	cd Dane-Proxy && docker build -t proxy-service -f Dockerfile.prod .
 
@@ -16,23 +7,42 @@ hosts-image:
 
 properties-image:
 	cd apis/properties-api && go build -o properties-api .
-	cd apis/properties-api && docker build -t properties-api . 
+	cd apis/properties-api && docker build -t properties-api .
+
+get-data-image:
+	cd apis/get-data-api && go build -o get-data-api .
+	cd apis/get-data-api && docker build -t get-data-api .
 
 client:
 	yarn run build:local
 
-# build: photo-header-image hosted-by-image proxy-image
-build: client hosts-image properties-image proxy-image
+build: client hosts-image properties-image proxy-image get-data-image
 
 docker-push: build
-	docker tag photo-header-service manedurphy/photo-header-service
-	docker push manedurphy/photo-header-service
+	docker tag properties-api manedurphy/properties-api
+	docker push manedurphy/properties-api
 
-	docker tag hosted-by-service manedurphy/hosted-by-service
-	docker push manedurphy/hosted-by-service
+	docker tag hosts-api manedurphy/hosts-api
+	docker push manedurphy/hosts-api
 
 	docker tag proxy-service manedurphy/proxy-service
 	docker push manedurphy/proxy-service
+	
+	docker tag get-data-api manedurphy/get-data-api
+	docker push manedurphy/get-data-api
+
+load: build
+	docker tag properties-api local/properties-api
+	kind load docker-image local/properties-api
+
+	docker tag hosts-api local/hosts-api
+	kind load docker-image local/hosts-api
+	
+	docker tag get-data-api local/get-data-api
+	kind load docker-image local/get-data-api
+
+	docker tag proxy-service local/proxy-service
+	kind load docker-image local/proxy-service
 
 cluster:
 	kind create cluster --config=kind.yaml
@@ -42,11 +52,17 @@ ingress-controller:
 	helm install --namespace=ingress-nginx ingress-nginx ingress-nginx/ingress-nginx
 	kubectl wait --namespace=ingress-nginx --for=condition=Ready --timeout=5m pod -l app.kubernetes.io/name=ingress-nginx
 
-deploy:
-	kubectl --namespace=default apply -f k8s
+deploy-local:
+	kubectl --namespace=default apply -f k8s/local
 
-destroy:
-	kubectl --namespace=default delete -f k8s
+deploy-prod:
+	kubectl --namespace=default apply -f k8s/aws
+
+destroy-local:
+	kubectl --namespace=default delete -f k8s/local
+
+destroy-prod:
+	kubectl --namespace=default delete -f k8s/aws
 
 forward:
 	kubectl config set-context --current --namespace=ingress-nginx

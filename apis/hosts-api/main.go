@@ -11,12 +11,12 @@ func main() {
 	router := gin.Default()
 	db.Connect()
 
-	router.GET("/api/hosts/healthz", healthCheck)
-	router.GET("/api/hosts", host.GetHost)
-	router.GET("/api/hosts/hosted-by/:roomNumber", host.GetHostedByData)
-	router.GET("/api/hosts/isSuperhost/:hostId", host.GetSuperhostStatus)
-	router.POST("/api/hosts/create-host", host.CreateHost)
-	router.POST("/api/hosts/create-language", host.CreateLanguage)
+	router.GET("/hosts/healthz", healthCheck)
+	router.GET("/hosts", host.GetHost)
+	router.GET("/hosts/hosted-by/:roomNumber", host.GetHostedByData)
+	router.GET("/hosts/isSuperhost/:hostId", host.GetSuperhostStatus)
+	router.POST("/hosts/create-host", host.CreateHost)
+	router.POST("/hosts/create-language", host.CreateLanguage)
 	router.Run()
 }
 

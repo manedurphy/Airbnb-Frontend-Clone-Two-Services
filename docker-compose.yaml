@@ -1,41 +1,6 @@
 version: "3.9"
 
 services:
-  # photo-header-service:
-  #   restart: always
-  #   build:
-  #     context: ./Dane-Service-Header
-  #     dockerfile: Dockerfile
-  #   ports:
-  #   - 5001:5001
-  #   environment:
-  #   - HOST=photo-header-db
-  #   - MYSQL_USER=root
-  #   - MYSQL_PASSWORD=password
-  #   - DB=photo-header
-  #   - HOSTEDBY_DOMAIN=http://hosted-by-service:5002
-  #   - REDIS_READ_URL=redis://redis:6379
-  #   - REDIS_WRITE_URL=redis://redis:6379
-  #   depends_on:
-  #   - photo-header-db
-
-  # hosted-by-service:
-  #   restart: always
-  #   build:
-  #     context: ./Dane-Service-HostedBy
-  #     dockerfile: Dockerfile
-  #   ports:
-  #   - 5002:5002
-  #   environment:
-  #   - HOST=hosted-by-db
-  #   - MYSQL_USER=root
-  #   - MYSQL_PASSWORD=password
-  #   - DB=hosted-by
-  #   - REDIS_READ_URL=redis://redis:6379
-  #   - REDIS_WRITE_URL=redis://redis:6379
-  #   depends_on:
-  #   - hosted-by-db
-
   hosts-service:
     restart: always
     build:
@@ -68,6 +33,22 @@ services:
     depends_on: 
     - properties-db
 
+  get-data-service:
+    restart: always
+    build:
+      context: ./apis/get-data-api
+      dockerfile: Dockerfile
+    ports:
+    - 8000:8000
+    depends_on:
+    - redis-write
+    - redis-read
+    environment:
+    - REDIS_WRITE_URL=redis-write:6379
+    - REDIS_READ_URL=redis-read:6379
+    - HOSTS_API=http://hosts-service:8080
+    - PROPERTIES_API=http://properties-service:8081
+
   proxy:
     restart: always
     build:
@@ -75,11 +56,10 @@ services:
       dockerfile: Dockerfile.dev
     ports:
     - 5000:5000
-    depends_on:
-    - redis
     environment: 
     - HOSTS_API=http://hosts-service:8080
     - PROPERTIES_API=http://properties-service:8081
+    - GET_DATA_API=http://get-data-service:8000
 
   hosts-db:
     restart: always
@@ -87,9 +67,8 @@ services:
     environment:
     - MYSQL_ROOT_PASSWORD=password
     - MYSQL_DATABASE=hosts
-    # volumes:
-    # - ./storage/hosted-by-dump:/docker-entrypoint-initdb.d
-    # - ./data/hosted-by:/var/lib/mysql
+    volumes:
+    - ./data/hosted-by:/var/lib/mysql
 
   properties-db:
     restart: always
@@ -97,12 +76,15 @@ services:
     environment:
     - MYSQL_ROOT_PASSWORD=password
     - MYSQL_DATABASE=properties
-    # volumes:
-    # - ./storage/photo-header-dump:/docker-entrypoint-initdb.d
-    # - ./data/photo-header:/var/lib/mysql
+    volumes:
+    - ./data/photo-header:/var/lib/mysql
 
-  redis:
+  redis-write:
     restart: always
     image: redis:6.2.3-alpine
-    # ports:
-    # - 6379:6379
+    command: ["redis-server", "--protected-mode", "no"]
+
+  redis-read:
+    restart: always
+    image: redis:6.2.3-alpine
+    command: ["redis-server", "--replicaof", "redis-write", "6379", "--protected-mode", "no"]

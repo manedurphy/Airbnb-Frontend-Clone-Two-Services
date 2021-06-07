@@ -25,6 +25,7 @@ const hostedBySlice = createSlice({
         setHostedByState: (state, action) => {
             return {
                 ...state,
+                duringYourStay: action.payload.duringYourStay,
                 coHosts: action.payload.cohosts,
                 responseTime: action.payload.host.responseTime,
                 responseRate: action.payload.host.responseRate,
@@ -37,7 +38,7 @@ const hostedBySlice = createSlice({
                     isSuperhost: action.payload.host.isSuperhost,
                     avatar: action.payload.host.avatar,
                     languages: action.payload.languages,
-                    joinedOn: Date.now(),
+                    joinedOn: action.payload.host.joinedOn,
                 },
             };
         },

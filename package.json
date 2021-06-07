@@ -6,9 +6,11 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js && node staticUpload.js",
     "build:local": "webpack --config webpack.prod.js",
+    "load:local": "k6 run stress/loadLocal.js",
     "seed": "node scripts/goSeedScript.js",
     "start": "pm2 start ecosystem.config.js && pm2 monit",
     "stop": "pm2 stop ecosystem.config.js",
+    "stress:local": "k6 run stress/stressLocal.js",
     "s3": "node Dane-Service-Header/backend/data/seedScripts/PhotoHarvest.js"
   },
   "keywords": [],
@@ -49,6 +51,7 @@
   },
   "dependencies": {
     "aws-sdk": "^2.834.0",
+    "csv-writer": "^1.6.0",
     "mime-types": "^2.1.28",
     "pm2": "^4.5.6"
   }
