@@ -1,9 +1,13 @@
 proxy-image:
 	cd Dane-Proxy && docker build -t static-files -f Dockerfile.prod .
 
-hosts-image:
+hosts-image-prod:
 	cd apis/hosts-api && go build -o hosts-api .
-	cd apis/hosts-api && docker build -t hosts-api .    
+	cd apis/hosts-api && docker build -f Dockerfile.prod -t hosts-api .    
+
+hosts-image-dev:
+	cd apis/hosts-api && go build -o hosts-api .
+	cd apis/hosts-api && docker build -f Dockerfile.dev -t hosts-api .    
 
 properties-image:
 	cd apis/properties-api && go build -o properties-api .
@@ -16,7 +20,9 @@ get-data-image:
 client:
 	yarn run build:local
 
-build: client hosts-image properties-image proxy-image get-data-image
+build: client hosts-image-prod properties-image proxy-image get-data-image
+
+build-dev: client hosts-image-dev properties-image proxy-image get-data-image
 
 docker-push: build
 	docker tag properties-api manedurphy/properties-api
@@ -74,3 +80,6 @@ eks:
 eks-destroy:
 	eksctl delete cluster --config-file eksctl.yaml
 
+# TESTING
+hosts-api-test:
+	cd apis/hosts-api && ./tests.sh
