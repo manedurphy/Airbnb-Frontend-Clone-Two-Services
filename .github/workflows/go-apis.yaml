@@ -1,0 +1,38 @@
+name: Go
+
+on:
+  push:
+    branches: [ testing ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go Environment
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16.3
+
+    - name: Install Make
+      run: |
+        sudo apt update -y
+        sudo apt-get -y install make
+    
+    - name: Set up MySQL Container
+      run: |
+        docker run --name=hosts-db -d -p 3306:3306 --rm -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+        -e MYSQL_DATABASE=${{ secrets.MYSQL_DB }} -e MYSQL_USER=${{ secrets.MYSQL_USER }} -e HOST="localhost" \
+        -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} mysql:8.0.25
+
+    - name: Hosts API Unit Tests
+      env:
+        MYSQL_USER: ${{ secrets.MYSQL_USER }}
+        MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        MYSQL_DB: ${{ secrets.MYSQL_DB }}
+        HOST: ${{ secrets.HOST }}
+      run: make hosts-api-test
