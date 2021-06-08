@@ -10,7 +10,7 @@ services:
     - 8080:8080
     environment:
     # - HOST=hosts-db
-    - HOST=hosts-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
+    - HOST=hosts-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
     # - MYSQL_USER=root
     - MYSQL_USER=manedurphy
     - MYSQL_PASSWORD=password
@@ -28,7 +28,7 @@ services:
     - 8081:8081
     environment:
     # - HOST=properties-db
-    - HOST=properties-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
+    - HOST=properties-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
     # - MYSQL_USER=root
     - MYSQL_USER=manedurphy
     - MYSQL_PASSWORD=password

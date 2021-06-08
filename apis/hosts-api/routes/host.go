@@ -2,6 +2,7 @@ package host
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"hosts-api/db"
 	"io"
@@ -9,6 +10,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 type CreateHostRequest struct {
@@ -77,9 +79,9 @@ func GetHost(c *gin.Context) {
 	}
 
 	var host db.Host
-	result := db.MySqlDb.Find(&host, "id = ?", id)
+	result := db.MySqlDb.First(&host, "id = ?", id)
 
-	if result.Error != nil {
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 		fmt.Printf("error getting host: %v\n", result.Error.Error())
 		c.JSON(404, gin.H{
 			"message": "could not find host",

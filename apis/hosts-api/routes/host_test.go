@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -89,6 +90,16 @@ func TestCreateLanguageMethod(t *testing.T) {
 
 }
 
+type CreateHostPartialResponse struct {
+	Host Host `json:"host"`
+}
+
+type Host struct {
+	ID uuid.UUID `json:"id"`
+}
+
+var hostId uuid.UUID
+
 func TestCreateHost(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
@@ -131,6 +142,13 @@ func TestCreateHost(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		router.ServeHTTP(w, req)
+
+		var partialResponse CreateHostPartialResponse
+
+		respBody, _ := io.ReadAll(w.Body)
+		json.Unmarshal(respBody, &partialResponse)
+
+		hostId = partialResponse.Host.ID
 
 		assert.Equal(t, 201, w.Code, "status code should be 201")
 	})
@@ -186,6 +204,72 @@ func TestCreateHost(t *testing.T) {
 		}
 
 		assert.Equal(t, 400, w.Code, "status code should be 400")
+		assert.Equal(t, resp, expectedResp)
+	})
+}
+
+func TestGetHost(t *testing.T) {
+	router := gin.Default()
+	router.GET("/hosts/host", GetHost)
+
+	t.Run("Success", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/hosts/host", nil)
+		req.Header.Set("host_id", hostId.String())
+
+		if err != nil {
+			t.Fatalf("could not create a request: %v\n", err)
+		}
+
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		assert.Equal(t, 200, w.Code, "status code should be 200")
+	})
+
+	t.Run("MissingHostId", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/hosts/host", nil)
+
+		if err != nil {
+			t.Fatalf("could not create a request: %v\n", err)
+		}
+
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		resp, err := io.ReadAll(w.Body)
+		expectedResp, _ := json.Marshal(gin.H{
+			"message": "must include host_id in header",
+		})
+
+		if err != nil {
+			t.Fatalf("could not read response body: %v", err)
+		}
+
+		assert.Equal(t, 400, w.Code, "status code should be 400")
+		assert.Equal(t, resp, expectedResp)
+	})
+
+	t.Run("NotFound", func(t *testing.T) {
+		req, err := http.NewRequest(http.MethodGet, "/hosts/host", nil)
+		req.Header.Set("host_id", "bad-host-id")
+
+		if err != nil {
+			t.Fatalf("could not create a request: %v\n", err)
+		}
+
+		w := httptest.NewRecorder()
+		router.ServeHTTP(w, req)
+
+		resp, err := io.ReadAll(w.Body)
+		expectedResp, _ := json.Marshal(gin.H{
+			"message": "could not find host",
+		})
+
+		if err != nil {
+			t.Fatalf("could not read response body: %v", err)
+		}
+
+		assert.Equal(t, 404, w.Code, "status code should be 404")
 		assert.Equal(t, resp, expectedResp)
 	})
 }

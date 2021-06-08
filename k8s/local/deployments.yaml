@@ -99,7 +99,7 @@ spec:
         name: properties-api
         env:
         - name: HOST
-          value: properties-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
+          value: properties-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD
@@ -133,7 +133,7 @@ spec:
         name: hosts-api
         env:
         - name: HOST
-          value: hosts-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
+          value: hosts-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD
