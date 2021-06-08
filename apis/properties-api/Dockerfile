@@ -5,4 +5,4 @@ WORKDIR /app
 
 COPY ./properties-api ./properties-api
 
-CMD ["/app/properties-api"]
+ENTRYPOINT ["/app/properties-api", "--drop=true"]

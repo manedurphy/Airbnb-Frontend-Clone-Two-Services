@@ -1,5 +1,5 @@
 proxy-image:
-	cd Dane-Proxy && docker build -t proxy-service -f Dockerfile.prod .
+	cd Dane-Proxy && docker build -t static-files -f Dockerfile.prod .
 
 hosts-image:
 	cd apis/hosts-api && go build -o hosts-api .
@@ -25,8 +25,8 @@ docker-push: build
 	docker tag hosts-api manedurphy/hosts-api
 	docker push manedurphy/hosts-api
 
-	docker tag proxy-service manedurphy/proxy-service
-	docker push manedurphy/proxy-service
+	docker tag static-files manedurphy/static-files
+	docker push manedurphy/static-files
 	
 	docker tag get-data-api manedurphy/get-data-api
 	docker push manedurphy/get-data-api
@@ -41,8 +41,8 @@ load: build
 	docker tag get-data-api local/get-data-api
 	kind load docker-image local/get-data-api
 
-	docker tag proxy-service local/proxy-service
-	kind load docker-image local/proxy-service
+	docker tag static-files local/static-files
+	kind load docker-image local/static-files
 
 cluster:
 	kind create cluster --config=kind.yaml

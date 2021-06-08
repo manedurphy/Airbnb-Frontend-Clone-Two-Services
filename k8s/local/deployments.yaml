@@ -2,22 +2,22 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app: proxy-deploy
-  name: proxy-deploy
+    app: static-files-deploy
+  name: static-files-deploy
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: proxy-deploy
+      app: static-files-deploy
   template:
     metadata:
       labels:
-        app: proxy-deploy
+        app: static-files-deploy
     spec:
       containers:
-      - image: local/proxy-service
+      - image: local/static-files-service
         imagePullPolicy: Never
-        name: proxy-service
+        name: static-files-service
         env:
         - name: HOSTS_API
           value: http://hosts-service:8080
@@ -99,7 +99,7 @@ spec:
         name: properties-api
         env:
         - name: HOST
-          value: properties-dev-sb.czsnmstr0khj.us-east-1.rds.amazonaws.com
+          value: properties-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD
@@ -133,7 +133,7 @@ spec:
         name: hosts-api
         env:
         - name: HOST
-          value: hosts-dev-db.czsnmstr0khj.us-east-1.rds.amazonaws.com
+          value: hosts-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
         - name: MYSQL_USER
           value: manedurphy
         - name: MYSQL_PASSWORD

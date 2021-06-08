@@ -51,15 +51,15 @@ func CreateProperty(c *gin.Context) {
 	p := db.Property{}
 	setProps(&p, req)
 
-	// err := confirmHostExists(p.HostId)
+	err := confirmHostExists(p.HostId)
 
-	// if err != nil {
-	// 	c.JSON(404, gin.H{
-	// 		"message": err.Error(),
-	// 	})
+	if err != nil {
+		c.JSON(404, gin.H{
+			"message": err.Error(),
+		})
 
-	// 	return
-	// }
+		return
+	}
 
 	db.MySqlDb.Create(&p)
 

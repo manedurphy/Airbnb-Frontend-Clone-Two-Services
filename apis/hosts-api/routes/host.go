@@ -2,13 +2,13 @@ package host
 
 import (
 	"encoding/json"
+	"fmt"
 	"hosts-api/db"
 	"io"
 	"net/http"
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type CreateHostRequest struct {
@@ -37,10 +37,6 @@ func CreateHost(c *gin.Context) {
 	}
 
 	db.MySqlDb.Create(&h)
-
-	for _, name := range req.Languages {
-		createHostLanguageRelationship(name, h.ID)
-	}
 
 	c.JSON(201, gin.H{
 		"host": h,
@@ -81,15 +77,20 @@ func GetHost(c *gin.Context) {
 	}
 
 	var host db.Host
-	result := db.MySqlDb.First(&host, "id = ?", id)
+	result := db.MySqlDb.Find(&host, "id = ?", id)
 
 	if result.Error != nil {
+		fmt.Printf("error getting host: %v\n", result.Error.Error())
 		c.JSON(404, gin.H{
-			"message": "did not find host with that ID",
+			"message": "could not find host",
 		})
 
 		return
 	}
+
+	var languages []db.Language
+	db.MySqlDb.Raw("SELECT * FROM languages WHERE id in (SELECT language_id from host_languages WHERE host_id = ?)", id).Scan(&languages)
+	host.Languages = languages
 
 	c.JSON(200, gin.H{
 		"host": host,
@@ -162,33 +163,21 @@ func GetHostedByData(c *gin.Context) {
 	var host db.Host
 	db.MySqlDb.Where("id = ?", hostedByReponse.HostId).First(&host)
 
-	var hostLanguageRelationship db.HostLanguageRelationship
-	db.MySqlDb.Where("host_id = ?", host.ID).First(&hostLanguageRelationship)
+	// var hostLanguageRelationship db.HostLanguageRelationship
+	// db.MySqlDb.Where("host_id = ?", host.ID).First(&hostLanguageRelationship)
 
-	var languages []db.Language
-	db.MySqlDb.Where("id = ?", hostLanguageRelationship.LanguageId).Find(&languages)
+	// var languages []db.Language
+	// db.MySqlDb.Where("id = ?", hostLanguageRelationship.LanguageId).Find(&languages)
 
 	c.JSON(resp.StatusCode, gin.H{
 		"cohosts":        cohosts,
 		"host":           host,
 		"duringYourStay": hostedByReponse.DuringYourStay,
-		"languages":      languages,
+		// "languages":      languages,
 	})
 }
 
-func createHostLanguageRelationship(name string, hostId uuid.UUID) {
-	var language db.Language
-	db.MySqlDb.First(&language, "name = ?", name)
-	hlrId := uuid.New()
-
-	hlr := db.HostLanguageRelationship{ID: hlrId, HostId: hostId, LanguageId: language.ID}
-	db.MySqlDb.Create(&hlr)
-}
-
 func setProps(h *db.Host, req *CreateHostRequest) {
-	id := uuid.New()
-
-	h.ID = id
 	h.FirstName = req.FirstName
 	h.LastName = req.LastName
 	h.Email = req.Email
@@ -200,6 +189,11 @@ func setProps(h *db.Host, req *CreateHostRequest) {
 	h.IdentityVerified = req.IdentityVerified
 	h.IsSuperhost = req.IsSuperhost
 	h.JoinedOn = req.JoinedOn
+
+	var languages []db.Language
+	db.MySqlDb.Where("name IN ?", req.Languages).Find(&languages)
+
+	h.Languages = languages
 }
 
 func checkForExistingHost(email string) bool {

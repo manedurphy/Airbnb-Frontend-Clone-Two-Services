@@ -9,13 +9,15 @@ services:
     ports:
     - 8080:8080
     environment:
-    - HOST=hosts-db
-    - MYSQL_USER=root
+    # - HOST=hosts-db
+    - HOST=hosts-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
+    # - MYSQL_USER=root
+    - MYSQL_USER=manedurphy
     - MYSQL_PASSWORD=password
     - MYSQL_DB=hosts
     - PROPERTIES_API=http://properties-service:8081
-    depends_on: 
-    - hosts-db
+    # depends_on: 
+    # - hosts-db
 
   properties-service:
     restart: always
@@ -25,13 +27,15 @@ services:
     ports:
     - 8081:8081
     environment:
-    - HOST=properties-db
-    - MYSQL_USER=root
+    # - HOST=properties-db
+    - HOST=properties-db.ci3lh7ol1uz9.us-east-1.rds.amazonaws.com
+    # - MYSQL_USER=root
+    - MYSQL_USER=manedurphy
     - MYSQL_PASSWORD=password
     - MYSQL_DB=properties
     - HOSTS_API=http://hosts-service:8080
-    depends_on: 
-    - properties-db
+    # depends_on: 
+    # - properties-db
 
   get-data-service:
     restart: always
@@ -49,7 +53,7 @@ services:
     - HOSTS_API=http://hosts-service:8080
     - PROPERTIES_API=http://properties-service:8081
 
-  proxy:
+  static-files:
     restart: always
     build:
       context: ./Dane-Proxy
@@ -61,23 +65,23 @@ services:
     - PROPERTIES_API=http://properties-service:8081
     - GET_DATA_API=http://get-data-service:8000
 
-  hosts-db:
-    restart: always
-    image: mysql:8.0.25
-    environment:
-    - MYSQL_ROOT_PASSWORD=password
-    - MYSQL_DATABASE=hosts
-    volumes:
-    - ./data/hosted-by:/var/lib/mysql
+  # hosts-db:
+  #   restart: always
+  #   image: mysql:8.0.25
+  #   environment:
+  #   - MYSQL_ROOT_PASSWORD=password
+  #   - MYSQL_DATABASE=hosts
+  #   volumes:
+  #   - ./data/hosted-by:/var/lib/mysql
 
-  properties-db:
-    restart: always
-    image: mysql:8.0.25
-    environment:
-    - MYSQL_ROOT_PASSWORD=password
-    - MYSQL_DATABASE=properties
-    volumes:
-    - ./data/photo-header:/var/lib/mysql
+  # properties-db:
+  #   restart: always
+  #   image: mysql:8.0.25
+  #   environment:
+  #   - MYSQL_ROOT_PASSWORD=password
+  #   - MYSQL_DATABASE=properties
+  #   volumes:
+  #   - ./data/photo-header:/var/lib/mysql
 
   redis-write:
     restart: always

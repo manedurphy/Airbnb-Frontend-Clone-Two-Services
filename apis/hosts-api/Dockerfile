@@ -5,4 +5,4 @@ WORKDIR /app
 
 COPY ./hosts-api ./hosts-api
 
-CMD ["/app/hosts-api"]
+ENTRYPOINT ["/app/hosts-api", "--drop=true"]
