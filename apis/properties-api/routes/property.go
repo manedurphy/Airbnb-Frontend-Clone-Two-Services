@@ -94,7 +94,7 @@ func CreatePhotos(c *gin.Context) {
 	})
 }
 
-func GetCohosts(c *gin.Context) {
+func GetPropertiesHostedByData(c *gin.Context) {
 	roomNumber := c.Param("roomNumber")
 
 	var property db.Property
@@ -206,7 +206,7 @@ func createCohost(cohostId uuid.UUID, propertyId uuid.UUID) {
 
 func confirmHostExists(hostId uuid.UUID) error {
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", os.Getenv("HOSTS_API")+"/hosts", nil)
+	request, _ := http.NewRequest("GET", os.Getenv("HOSTS_API")+"/hosts/host", nil)
 	request.Header.Set("host_id", hostId.String())
 
 	resp, _ := client.Do(request)

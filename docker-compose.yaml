@@ -10,15 +10,13 @@ services:
     ports:
     - 8080:8080
     environment:
-    # - HOST=hosts-db
-    - HOST=hosts-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
-    # - MYSQL_USER=root
-    - MYSQL_USER=manedurphy
+    - HOST=hosts-db
+    - MYSQL_USER=root
     - MYSQL_PASSWORD=password
     - MYSQL_DB=hosts
     - PROPERTIES_API=http://properties-service:8081
-    # depends_on: 
-    # - hosts-db
+    depends_on: 
+    - hosts-db
 
   properties-service:
     container_name: properties-api
@@ -29,15 +27,13 @@ services:
     ports:
     - 8081:8081
     environment:
-    # - HOST=properties-db
-    - HOST=properties-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
-    # - MYSQL_USER=root
-    - MYSQL_USER=manedurphy
+    - HOST=properties-db
+    - MYSQL_USER=root
     - MYSQL_PASSWORD=password
     - MYSQL_DB=properties
     - HOSTS_API=http://hosts-service:8080
-    # depends_on: 
-    # - properties-db
+    depends_on: 
+    - properties-db
 
   get-data-service:
     container_name: get-data-api
@@ -69,23 +65,23 @@ services:
     - PROPERTIES_API=http://properties-service:8081
     - GET_DATA_API=http://get-data-service:8000
 
-  # hosts-db:
-  #   restart: always
-  #   image: mysql:8.0.25
-  #   environment:
-  #   - MYSQL_ROOT_PASSWORD=password
-  #   - MYSQL_DATABASE=hosts
-  #   volumes:
-  #   - ./data/hosted-by:/var/lib/mysql
+  hosts-db:
+    restart: always
+    image: mysql:8.0.25
+    environment:
+    - MYSQL_ROOT_PASSWORD=password
+    - MYSQL_DATABASE=hosts
+    volumes:
+    - ./data/hosted-by:/var/lib/mysql
 
-  # properties-db:
-  #   restart: always
-  #   image: mysql:8.0.25
-  #   environment:
-  #   - MYSQL_ROOT_PASSWORD=password
-  #   - MYSQL_DATABASE=properties
-  #   volumes:
-  #   - ./data/photo-header:/var/lib/mysql
+  properties-db:
+    restart: always
+    image: mysql:8.0.25
+    environment:
+    - MYSQL_ROOT_PASSWORD=password
+    - MYSQL_DATABASE=properties
+    volumes:
+    - ./data/photo-header:/var/lib/mysql
 
   redis-write:
     restart: always

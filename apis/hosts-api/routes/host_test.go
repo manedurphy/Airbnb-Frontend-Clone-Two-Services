@@ -102,10 +102,10 @@ var hostId uuid.UUID
 
 func TestCreateHost(t *testing.T) {
 	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	router.POST("/hosts/create-host", CreateHost)
 
 	t.Run("Success", func(t *testing.T) {
-		router := gin.Default()
-		router.POST("/hosts/create-host", CreateHost)
 
 		host := db.Host{
 			FirstName:        "Test",
@@ -154,8 +154,6 @@ func TestCreateHost(t *testing.T) {
 	})
 
 	t.Run("Failure", func(t *testing.T) {
-		router := gin.Default()
-		router.POST("/hosts/create-host", CreateHost)
 
 		host := db.Host{
 			FirstName:        "Test",

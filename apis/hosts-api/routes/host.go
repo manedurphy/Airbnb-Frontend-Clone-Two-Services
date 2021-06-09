@@ -90,9 +90,7 @@ func GetHost(c *gin.Context) {
 		return
 	}
 
-	var languages []db.Language
-	db.MySqlDb.Raw("SELECT * FROM languages WHERE id in (SELECT language_id from host_languages WHERE host_id = ?)", id).Scan(&languages)
-	host.Languages = languages
+	setLanguages(id, &host)
 
 	c.JSON(200, gin.H{
 		"host": host,
@@ -153,7 +151,11 @@ func GetHostedByData(c *gin.Context) {
 		panic(err)
 	}
 
-	json.Unmarshal(body, &hostedByReponse)
+	err = json.Unmarshal(body, &hostedByReponse)
+
+	if err != nil {
+		panic(err)
+	}
 
 	var cohosts []db.Host
 	for _, cohost := range hostedByReponse.Cohosts {
@@ -164,18 +166,12 @@ func GetHostedByData(c *gin.Context) {
 
 	var host db.Host
 	db.MySqlDb.Where("id = ?", hostedByReponse.HostId).First(&host)
-
-	// var hostLanguageRelationship db.HostLanguageRelationship
-	// db.MySqlDb.Where("host_id = ?", host.ID).First(&hostLanguageRelationship)
-
-	// var languages []db.Language
-	// db.MySqlDb.Where("id = ?", hostLanguageRelationship.LanguageId).Find(&languages)
+	setLanguages(host.ID.String(), &host)
 
 	c.JSON(resp.StatusCode, gin.H{
 		"cohosts":        cohosts,
 		"host":           host,
 		"duringYourStay": hostedByReponse.DuringYourStay,
-		// "languages":      languages,
 	})
 }
 
@@ -196,6 +192,12 @@ func setProps(h *db.Host, req *CreateHostRequest) {
 	db.MySqlDb.Where("name IN ?", req.Languages).Find(&languages)
 
 	h.Languages = languages
+}
+
+func setLanguages(id string, host *db.Host) {
+	var languages []db.Language
+	db.MySqlDb.Raw("SELECT * FROM languages WHERE id in (SELECT language_id from host_languages WHERE host_id = ?)", host.ID.String()).Scan(&languages)
+	host.Languages = languages
 }
 
 func checkForExistingHost(email string) bool {

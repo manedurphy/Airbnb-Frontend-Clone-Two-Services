@@ -37,7 +37,7 @@ const hostedBySlice = createSlice({
                     identityVerified: action.payload.host.identityVerified,
                     isSuperhost: action.payload.host.isSuperhost,
                     avatar: action.payload.host.avatar,
-                    languages: action.payload.languages,
+                    languages: action.payload.host.languages,
                     joinedOn: action.payload.host.joinedOn,
                 },
             };

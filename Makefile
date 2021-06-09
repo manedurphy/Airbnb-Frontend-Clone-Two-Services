@@ -5,10 +5,6 @@ hosts-image-prod:
 	cd apis/hosts-api && go build -o hosts-api .
 	cd apis/hosts-api && docker build -f Dockerfile.prod -t hosts-api .    
 
-hosts-image-dev:
-	cd apis/hosts-api && go build -o hosts-api .
-	cd apis/hosts-api && docker build -f Dockerfile.dev -t hosts-api .    
-
 properties-image:
 	cd apis/properties-api && go build -o properties-api .
 	cd apis/properties-api && docker build -t properties-api .
@@ -22,7 +18,6 @@ client:
 
 build: client hosts-image-prod properties-image proxy-image get-data-image
 
-build-dev: client hosts-image-dev properties-image proxy-image get-data-image
 
 docker-push: build
 	docker tag properties-api manedurphy/properties-api
@@ -83,3 +78,15 @@ eks-destroy:
 # TESTING
 hosts-api-test:
 	cd apis/hosts-api && ./tests.sh
+
+# DEVELOPMENT
+hosts-image-dev:
+	cd apis/hosts-api && go build -o hosts-api .
+	cd apis/hosts-api && docker build -f Dockerfile.dev -t hosts-api .   
+
+build-dev: client hosts-image-dev properties-image proxy-image get-data-image
+
+compose: build-dev
+	docker-compose up --build -d
+	sleep 5
+	yarn run seed
