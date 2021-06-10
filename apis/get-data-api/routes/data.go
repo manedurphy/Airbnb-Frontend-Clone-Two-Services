@@ -18,12 +18,6 @@ var (
 	ctx = context.Background()
 )
 
-func HealthCheck(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"message": "healthy!",
-	})
-}
-
 func GetHostedByData(c *gin.Context) {
 	roomNumber := c.Param("roomNumber")
 
