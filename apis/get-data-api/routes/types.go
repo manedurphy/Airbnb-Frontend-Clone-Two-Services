@@ -8,7 +8,7 @@ type Cohost struct {
 	PropertyId uuid.UUID `json:"propertyId"`
 }
 
-type GetPropertiesHostedByData struct {
+type PropertiesHostedByData struct {
 	Cohosts        []Cohost  `json:"cohosts"`
 	DuringYourStay string    `json:"duringYourStay"`
 	HostId         uuid.UUID `json:"hostId"`
@@ -19,10 +19,7 @@ type GetHostResp struct {
 }
 
 type Host struct {
-	ID               uuid.UUID  `json:"id"`
 	FirstName        string     `json:"firstName"`
-	LastName         string     `json:"lastName"`
-	Email            string     `json:"email"`
 	About            string     `json:"about"`
 	Avatar           string     `json:"avatar"`
 	ResponseTime     int        `json:"responseTime"`
@@ -39,8 +36,46 @@ type Language struct {
 	Name string `json:"name"`
 }
 
-type GetHostedByDataResp struct {
+type Photo struct {
+	ID          uuid.UUID `json:"id"`
+	Link        string    `json:"link"`
+	IsMain      bool      `json:"isMain"`
+	Description string    `json:"description"`
+	PropertyId  uuid.UUID `json:"propertyId"`
+}
+
+type GetPropertiesPhotoHeaderDataResp struct {
+	Title           string    `json:"title"`
+	City            string    `json:"city"`
+	State           string    `json:"state"`
+	Country         string    `json:"country"`
+	Photos          []Photo   `json:"photos"`
+	NumberOfReviews int       `json:"numberOfReviews"`
+	Rating          float64   `json:"rating"`
+	HostId          uuid.UUID `json:"hostId"`
+}
+
+type Location struct {
+	City    string `json:"city"`
+	State   string `json:"state"`
+	Country string `json:"country"`
+}
+
+type Reviews struct {
+	NumberOfReviews int     `json:"numberOfReviews"`
+	Rating          float64 `json:"rating"`
+}
+
+type HostedByData struct {
 	Cohosts        []Host `json:"cohosts"`
 	Host           `json:"host"`
 	DuringYourStay string `json:"duringYourStay"`
+}
+
+type PhotoHeaderData struct {
+	Location    `json:"location"`
+	Reviews     `json:"reviews"`
+	IsSuperhost bool    `json:"isSuperhost"`
+	Title       string  `json:"title"`
+	Photos      []Photo `json:"photos"`
 }

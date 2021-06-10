@@ -34,5 +34,5 @@ jobs:
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
         MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         MYSQL_DB: ${{ secrets.MYSQL_DB }}
-        HOST: ${{ secrets.HOST }}
+        HOST: "localhost"
       run: make hosts-api-test

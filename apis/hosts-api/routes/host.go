@@ -1,22 +1,13 @@
 package host
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"hosts-api/db"
-	"io"
-	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
-
-type CreateHostRequest struct {
-	db.Host
-	Languages []string `json:"languages"`
-}
 
 func CreateHost(c *gin.Context) {
 	req := CreateHostRequest{}
@@ -97,84 +88,6 @@ func GetHost(c *gin.Context) {
 	})
 }
 
-func GetSuperhostStatus(c *gin.Context) {
-	hostId := c.Param("hostId")
-
-	var host db.Host
-	result := db.MySqlDb.Where("id = ?", hostId).First(&host)
-
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "could not find host",
-		})
-
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"isSuperhost": host.IsSuperhost,
-	})
-}
-
-type Cohost struct {
-	ID         string `json:"id"`
-	HostId     string `json:"hostId"`
-	PropertyId string `json:"propertyId"`
-}
-
-type GetCohostsResponse struct {
-	DuringYourStay string   `json:"duringYourStay"`
-	Cohosts        []Cohost `json:"cohosts"`
-	HostId         string   `json:"hostId"`
-}
-
-func GetHostedByData(c *gin.Context) {
-	roomNumber := c.Param("roomNumber")
-	resp, err := http.Get(os.Getenv("PROPERTIES_API") + "/properties/cohosts/" + roomNumber)
-
-	if err != nil {
-		panic(err)
-	}
-
-	if resp.StatusCode == 404 {
-		c.JSON(resp.StatusCode, gin.H{
-			"message": "property could not be found",
-		})
-		return
-	}
-
-	hostedByReponse := GetCohostsResponse{}
-	body, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
-	if err != nil {
-		panic(err)
-	}
-
-	err = json.Unmarshal(body, &hostedByReponse)
-
-	if err != nil {
-		panic(err)
-	}
-
-	var cohosts []db.Host
-	for _, cohost := range hostedByReponse.Cohosts {
-		var ch db.Host
-		db.MySqlDb.Where("id = ?", cohost.HostId).First(&ch)
-		cohosts = append(cohosts, ch)
-	}
-
-	var host db.Host
-	db.MySqlDb.Where("id = ?", hostedByReponse.HostId).First(&host)
-	setLanguages(host.ID.String(), &host)
-
-	c.JSON(resp.StatusCode, gin.H{
-		"cohosts":        cohosts,
-		"host":           host,
-		"duringYourStay": hostedByReponse.DuringYourStay,
-	})
-}
-
 func setProps(h *db.Host, req *CreateHostRequest) {
 	h.FirstName = req.FirstName
 	h.LastName = req.LastName
@@ -196,7 +109,7 @@ func setProps(h *db.Host, req *CreateHostRequest) {
 
 func setLanguages(id string, host *db.Host) {
 	var languages []db.Language
-	db.MySqlDb.Raw("SELECT * FROM languages WHERE id in (SELECT language_id from host_languages WHERE host_id = ?)", host.ID.String()).Scan(&languages)
+	db.MySqlDb.Raw("SELECT * FROM languages WHERE id IN (SELECT language_id from host_languages WHERE host_id = ?)", host.ID.String()).Scan(&languages)
 	host.Languages = languages
 }
 

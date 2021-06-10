@@ -12,7 +12,7 @@ func main() {
 	db.Connect()
 
 	router.GET("/properties/healthz", healthCheck)
-	router.GET("/properties/:roomNumber", property.GetPhotoHeaderData)
+	router.GET("/properties/:roomNumber", property.GetPropertiesPhotoHeaderData)
 	router.GET(("/properties/hosted-by/:roomNumber"), property.GetPropertiesHostedByData)
 	router.POST("/properties/create-property", property.CreateProperty)
 	router.POST("/properties/create-photos", property.CreatePhotos)

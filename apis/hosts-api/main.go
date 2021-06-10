@@ -18,10 +18,9 @@ func main() {
 
 	router.GET("/hosts/healthz", healthCheck)
 	router.GET("/hosts/host", host.GetHost)
-	router.GET("/hosts/isSuperhost/:hostId", host.GetSuperhostStatus)
 	router.POST("/hosts/create-host", host.CreateHost)
 	router.POST("/hosts/create-language", host.CreateLanguage)
-	router.Run()
+	router.Run(":8080")
 }
 
 func healthCheck(c *gin.Context) {

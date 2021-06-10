@@ -51,12 +51,12 @@ func WritePhotoHeaderData(ctx context.Context, data []byte, roomNumber string) e
 	return nil
 }
 
-func GetPhotoHeaderData(ctx context.Context, roomNumber string) (string, error) {
+func GetPhotoHeaderData(ctx context.Context, roomNumber string) string {
 	data, err := rdbRead.Get(ctx, "photoheader"+roomNumber).Result()
 
 	if err != redis.Nil {
-		return data, nil
+		return data
 	}
 
-	return "", err
+	return ""
 }
