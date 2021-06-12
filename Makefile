@@ -88,9 +88,9 @@ hosts-image-prod:
 
 properties-image-prod:
 	cd apis/properties-api && go build -o properties-api .
-	cd apis/properties-api && docker build -t properties-api .
+	cd apis/properties-api && docker build -t properties-api -f Dockerfile.prod .
 
-build-prod: client hosts-image-prod properties-image proxy-image get-data-image
+build-prod: client hosts-image-prod properties-image-prod proxy-image get-data-image
 
 docker-push: build-prod
 	docker tag properties-api manedurphy/properties-api
