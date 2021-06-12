@@ -1,0 +1,7 @@
+FROM ubuntu
+
+WORKDIR /app
+
+COPY ./hosts-api ./hosts-api
+
+ENTRYPOINT ["/app/hosts-api"]

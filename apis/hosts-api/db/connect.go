@@ -22,13 +22,16 @@ func Connect() {
 		panic(err)
 	}
 
-	// if os.Getenv("DROP_TABLES") == "true" {
 	if *drop {
-		db.Exec(`DROP TABLE IF EXISTS hosts.hosts`)
-		db.Exec(`DROP TABLE IF EXISTS hosts.languages`)
-		db.Exec(`DROP TABLE IF EXISTS hosts.host_language_relationships`)
+		dropTables(db)
 	}
 
-	db.AutoMigrate(&Host{}, &Language{}, &HostLanguageRelationship{})
+	db.AutoMigrate(&Host{}, &Language{})
 	MySqlDb = db
+}
+
+func dropTables(db *gorm.DB) {
+	db.Exec(`DROP TABLE IF EXISTS hosts.host_languages`)
+	db.Exec(`DROP TABLE IF EXISTS hosts.hosts`)
+	db.Exec(`DROP TABLE IF EXISTS hosts.languages`)
 }

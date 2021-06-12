@@ -1,0 +1,7 @@
+FROM ubuntu
+
+WORKDIR /app
+
+COPY ./properties-api ./properties-api
+
+ENTRYPOINT ["/app/properties-api", "--drop=true"]

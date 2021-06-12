@@ -1,9 +1,8 @@
 package property
 
 import (
-	"encoding/json"
 	"errors"
-	"io"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -13,53 +12,33 @@ import (
 	"github.com/google/uuid"
 )
 
-type CreatePropertyRequest struct {
-	db.Property
-	Cohosts []uuid.UUID `json:"cohosts"`
-}
-
-type CreatePhotoRequest struct {
-	Photos []db.Photo
-}
-
-type Location struct {
-	City    string `json:"city"`
-	State   string `json:"state"`
-	Country string `json:"country"`
-}
-
-type Reviews struct {
-	NumberOfReviews int     `json:"numberOfReviews"`
-	Rating          float64 `json:"rating"`
-}
-
-type GetPhotoHeaderDataResponse struct {
-	IsSuperhost bool `json:"isSuperhost"`
-	Location    `json:"location"`
-	Photos      []db.Photo `json:"photos"`
-	Reviews     `json:"reviews"`
-	Title       string `json:"title"`
-}
+var (
+	test = flag.Bool("test", false, "set to true when running unit tests")
+)
 
 func CreateProperty(c *gin.Context) {
+	flag.Parse()
 	req := CreatePropertyRequest{}
 
 	if err := c.ShouldBind(&req); err != nil {
-		panic(err)
+		sendResponse(c, gin.H{"message": "invalid payload"}, 400)
+		return
 	}
 
 	p := db.Property{}
 	setProps(&p, req)
 
-	// err := confirmHostExists(p.HostId)
+	if !*test {
+		err := confirmHostExists(p.HostId)
 
-	// if err != nil {
-	// 	c.JSON(404, gin.H{
-	// 		"message": err.Error(),
-	// 	})
+		if err != nil {
+			c.JSON(404, gin.H{
+				"message": err.Error(),
+			})
 
-	// 	return
-	// }
+			return
+		}
+	}
 
 	db.MySqlDb.Create(&p)
 
@@ -94,7 +73,7 @@ func CreatePhotos(c *gin.Context) {
 	})
 }
 
-func GetCohosts(c *gin.Context) {
+func GetPropertiesHostedByData(c *gin.Context) {
 	roomNumber := c.Param("roomNumber")
 
 	var property db.Property
@@ -122,11 +101,7 @@ func GetCohosts(c *gin.Context) {
 	})
 }
 
-type GetSuperhostStatusResponse struct {
-	IsSuperhost bool `json:"isSuperhost"`
-}
-
-func GetPhotoHeaderData(c *gin.Context) {
+func GetPropertiesPhotoHeaderData(c *gin.Context) {
 	roomNumber := c.Param("roomNumber")
 
 	var property db.Property
@@ -143,40 +118,18 @@ func GetPhotoHeaderData(c *gin.Context) {
 	var photos []db.Photo
 	db.MySqlDb.Find(&photos, "property_id = ?", property.ID)
 
-	reviews := Reviews{
-		NumberOfReviews: property.NumberOfReviews,
-		Rating:          4.28,
+	response := gin.H{
+		"title":           property.Title,
+		"city":            property.City,
+		"state":           property.State,
+		"country":         property.Country,
+		"photos":          photos,
+		"numberOfReviews": property.NumberOfReviews,
+		"rating":          property.Rating,
+		"hostId":          property.HostId,
 	}
 
-	isSuperhostResp, err := http.Get(os.Getenv("HOSTS_API") + "/hosts/isSuperhost/" + property.HostId.String())
-	if err != nil {
-		panic(err)
-	}
-
-	var isSuperhost GetSuperhostStatusResponse
-
-	body, err := io.ReadAll(isSuperhostResp.Body)
-	if err != nil {
-		panic(err)
-	}
-
-	defer isSuperhostResp.Body.Close()
-
-	json.Unmarshal(body, &isSuperhost)
-
-	resp := GetPhotoHeaderDataResponse{}
-
-	resp.Location.City = property.City
-	resp.Location.State = property.State
-	resp.Location.Country = property.Country
-	resp.IsSuperhost = isSuperhost.IsSuperhost
-	resp.Photos = photos
-	resp.Reviews = reviews
-	resp.Title = property.Title
-
-	c.JSON(http.StatusOK, gin.H{
-		"property": resp,
-	})
+	c.JSON(http.StatusOK, response)
 }
 
 func setProps(p *db.Property, req CreatePropertyRequest) {
@@ -185,6 +138,7 @@ func setProps(p *db.Property, req CreatePropertyRequest) {
 	p.ID = id
 	p.Title = req.Title
 	p.NumberOfReviews = req.NumberOfReviews
+	p.Rating = 4.12
 	p.DuringYourStay = req.DuringYourStay
 	p.DuringYourStay = req.DuringYourStay
 	p.City = req.City
@@ -206,7 +160,7 @@ func createCohost(cohostId uuid.UUID, propertyId uuid.UUID) {
 
 func confirmHostExists(hostId uuid.UUID) error {
 	client := &http.Client{}
-	request, _ := http.NewRequest("GET", os.Getenv("HOSTS_API")+"/hosts", nil)
+	request, _ := http.NewRequest("GET", os.Getenv("HOSTS_API")+"/hosts/host", nil)
 	request.Header.Set("host_id", hostId.String())
 
 	resp, _ := client.Do(request)
@@ -216,4 +170,8 @@ func confirmHostExists(hostId uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func sendResponse(c *gin.Context, response interface{}, statusCode int) {
+	c.JSON(statusCode, response)
 }

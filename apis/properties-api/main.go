@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"properties-api/db"
 	property "properties-api/routes"
 
@@ -8,12 +9,16 @@ import (
 )
 
 func main() {
+	if os.Getenv("GO_ENV") == "production" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+
 	router := gin.Default()
 	db.Connect()
 
 	router.GET("/properties/healthz", healthCheck)
-	router.GET("/properties/:roomNumber", property.GetPhotoHeaderData)
-	router.GET(("/properties/cohosts/:roomNumber"), property.GetCohosts)
+	router.GET("/properties/:roomNumber", property.GetPropertiesPhotoHeaderData)
+	router.GET(("/properties/hosted-by/:roomNumber"), property.GetPropertiesHostedByData)
 	router.POST("/properties/create-property", property.CreateProperty)
 	router.POST("/properties/create-photos", property.CreatePhotos)
 	router.Run(":8081")

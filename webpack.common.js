@@ -1,7 +1,10 @@
 const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { header, hostedby, headerNodeModules, hostedbyNodeModules } = require('./servicePaths');
+const header = resolve(__dirname, 'Dane-Service-Header', 'frontend', 'src', 'index.jsx');
+const headerNodeModules = resolve(__dirname, 'Dane-Service-Header', 'node_modules');
+const hostedby = resolve(__dirname, 'Dane-Service-HostedBy', 'frontend', 'src', 'index.jsx');
+const hostedbyNodeModules = resolve(__dirname, 'Dane-Service-HostedBy', 'node_modules');
 
 module.exports = {
     entry: {

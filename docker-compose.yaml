@@ -2,10 +2,11 @@ version: "3.9"
 
 services:
   hosts-service:
+    container_name: hosts-api
     restart: always
     build:
       context: ./apis/hosts-api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
     - 8080:8080
     environment:
@@ -18,10 +19,11 @@ services:
     - hosts-db
 
   properties-service:
+    container_name: properties-api
     restart: always
     build:
       context: ./apis/properties-api
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
     - 8081:8081
     environment:
@@ -34,6 +36,7 @@ services:
     - properties-db
 
   get-data-service:
+    container_name: get-data-api
     restart: always
     build:
       context: ./apis/get-data-api
@@ -49,7 +52,8 @@ services:
     - HOSTS_API=http://hosts-service:8080
     - PROPERTIES_API=http://properties-service:8081
 
-  proxy:
+  static-files:
+    container_name: static-files
     restart: always
     build:
       context: ./Dane-Proxy

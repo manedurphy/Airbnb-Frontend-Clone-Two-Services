@@ -1,20 +1,13 @@
 package host
 
 import (
-	"encoding/json"
+	"errors"
+	"fmt"
 	"hosts-api/db"
-	"io"
-	"net/http"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
-
-type CreateHostRequest struct {
-	db.Host
-	Languages []string `json:"languages"`
-}
 
 func CreateHost(c *gin.Context) {
 	req := CreateHostRequest{}
@@ -37,10 +30,6 @@ func CreateHost(c *gin.Context) {
 	}
 
 	db.MySqlDb.Create(&h)
-
-	for _, name := range req.Languages {
-		createHostLanguageRelationship(name, h.ID)
-	}
 
 	c.JSON(201, gin.H{
 		"host": h,
@@ -83,112 +72,23 @@ func GetHost(c *gin.Context) {
 	var host db.Host
 	result := db.MySqlDb.First(&host, "id = ?", id)
 
-	if result.Error != nil {
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		fmt.Printf("error getting host: %v\n", result.Error.Error())
 		c.JSON(404, gin.H{
-			"message": "did not find host with that ID",
-		})
-
-		return
-	}
-
-	c.JSON(200, gin.H{
-		"host": host,
-	})
-}
-
-func GetSuperhostStatus(c *gin.Context) {
-	hostId := c.Param("hostId")
-
-	var host db.Host
-	result := db.MySqlDb.Where("id = ?", hostId).First(&host)
-
-	if result.Error != nil {
-		c.JSON(http.StatusNotFound, gin.H{
 			"message": "could not find host",
 		})
 
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"isSuperhost": host.IsSuperhost,
+	setLanguages(id, &host)
+
+	c.JSON(200, gin.H{
+		"host": host,
 	})
-}
-
-type Cohost struct {
-	ID         string `json:"id"`
-	HostId     string `json:"hostId"`
-	PropertyId string `json:"propertyId"`
-}
-
-type GetCohostsResponse struct {
-	DuringYourStay string   `json:"duringYourStay"`
-	Cohosts        []Cohost `json:"cohosts"`
-	HostId         string   `json:"hostId"`
-}
-
-func GetHostedByData(c *gin.Context) {
-	roomNumber := c.Param("roomNumber")
-	resp, err := http.Get(os.Getenv("PROPERTIES_API") + "/properties/cohosts/" + roomNumber)
-
-	if err != nil {
-		panic(err)
-	}
-
-	if resp.StatusCode == 404 {
-		c.JSON(resp.StatusCode, gin.H{
-			"message": "property could not be found",
-		})
-		return
-	}
-
-	hostedByReponse := GetCohostsResponse{}
-	body, err := io.ReadAll(resp.Body)
-	defer resp.Body.Close()
-
-	if err != nil {
-		panic(err)
-	}
-
-	json.Unmarshal(body, &hostedByReponse)
-
-	var cohosts []db.Host
-	for _, cohost := range hostedByReponse.Cohosts {
-		var ch db.Host
-		db.MySqlDb.Where("id = ?", cohost.HostId).First(&ch)
-		cohosts = append(cohosts, ch)
-	}
-
-	var host db.Host
-	db.MySqlDb.Where("id = ?", hostedByReponse.HostId).First(&host)
-
-	var hostLanguageRelationship db.HostLanguageRelationship
-	db.MySqlDb.Where("host_id = ?", host.ID).First(&hostLanguageRelationship)
-
-	var languages []db.Language
-	db.MySqlDb.Where("id = ?", hostLanguageRelationship.LanguageId).Find(&languages)
-
-	c.JSON(resp.StatusCode, gin.H{
-		"cohosts":        cohosts,
-		"host":           host,
-		"duringYourStay": hostedByReponse.DuringYourStay,
-		"languages":      languages,
-	})
-}
-
-func createHostLanguageRelationship(name string, hostId uuid.UUID) {
-	var language db.Language
-	db.MySqlDb.First(&language, "name = ?", name)
-	hlrId := uuid.New()
-
-	hlr := db.HostLanguageRelationship{ID: hlrId, HostId: hostId, LanguageId: language.ID}
-	db.MySqlDb.Create(&hlr)
 }
 
 func setProps(h *db.Host, req *CreateHostRequest) {
-	id := uuid.New()
-
-	h.ID = id
 	h.FirstName = req.FirstName
 	h.LastName = req.LastName
 	h.Email = req.Email
@@ -200,6 +100,17 @@ func setProps(h *db.Host, req *CreateHostRequest) {
 	h.IdentityVerified = req.IdentityVerified
 	h.IsSuperhost = req.IsSuperhost
 	h.JoinedOn = req.JoinedOn
+
+	var languages []db.Language
+	db.MySqlDb.Where("name IN ?", req.Languages).Find(&languages)
+
+	h.Languages = languages
+}
+
+func setLanguages(id string, host *db.Host) {
+	var languages []db.Language
+	db.MySqlDb.Raw("SELECT * FROM languages WHERE id IN (SELECT language_id from host_languages WHERE host_id = ?)", host.ID.String()).Scan(&languages)
+	host.Languages = languages
 }
 
 func checkForExistingHost(email string) bool {

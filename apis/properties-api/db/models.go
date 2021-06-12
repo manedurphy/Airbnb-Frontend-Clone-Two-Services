@@ -8,6 +8,7 @@ type Property struct {
 	ID              uuid.UUID `gorm:"primaryKey" json:"id"`
 	Title           string    `json:"title"`
 	NumberOfReviews int       `json:"numberOfReviews"`
+	Rating          float64   `json:"rating"`
 	DuringYourStay  string    `json:"duringYourStay"`
 	City            string    `json:"city"`
 	State           string    `json:"state"`
@@ -23,7 +24,7 @@ type Cohost struct {
 }
 
 type Photo struct {
-	ID          uuid.UUID `gorm:"primaryKey"`
+	ID          uuid.UUID `gorm:"primaryKey" json:"id"`
 	Link        string    `json:"link"`
 	IsMain      bool      `json:"isMain"`
 	Description string    `json:"description"`

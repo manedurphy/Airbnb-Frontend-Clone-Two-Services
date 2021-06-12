@@ -12,7 +12,7 @@ const headerServiceSlice = createSlice({
         },
         reviews: {
             numberOfReviews: 0,
-            rating: 4.52,
+            rating: 0.0,
         },
         location: {
             city: '',
@@ -57,7 +57,10 @@ const headerServiceSlice = createSlice({
         setReviews: (state, action) => {
             return {
                 ...state,
-                reviews: action.payload,
+                reviews: {
+                    ...action.payload,
+                    rating: (Math.random() * 5 + 1).toFixed(2),
+                },
             };
         },
         setLocation: (state, action) => {
