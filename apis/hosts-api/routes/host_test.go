@@ -49,7 +49,7 @@ func TestCreateLanguage(t *testing.T) {
 			t.Errorf("could not read response body: %v\n", err)
 		}
 
-		assert.Equal(t, 201, w.Code, "status code should be 201")
+		assert.Equal(t, 200, w.Code, "status code should be 201")
 		assert.Equal(t, resp, expectedResp)
 	})
 
