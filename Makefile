@@ -92,7 +92,7 @@ properties-image-prod:
 
 build-prod: client hosts-image-prod properties-image proxy-image get-data-image
 
-docker-push: build
+docker-push: build-prod
 	docker tag properties-api manedurphy/properties-api
 	docker push manedurphy/properties-api
 
