@@ -23,16 +23,38 @@ jobs:
         sudo apt update -y
         sudo apt-get -y install make
     
-    - name: Set up MySQL Container
+    - name: Set up MySQL Container for hosts
       run: |
         docker run --name=hosts-db -d -p 3306:3306 --rm -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-        -e MYSQL_DATABASE=${{ secrets.MYSQL_DB }} -e MYSQL_USER=${{ secrets.MYSQL_USER }} -e HOST="localhost" \
+        -e MYSQL_DATABASE="hosts" -e MYSQL_USER=${{ secrets.MYSQL_USER }} -e HOST="localhost" \
         -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} mysql:8.0.25
 
     - name: Hosts API Unit Tests
       env:
         MYSQL_USER: ${{ secrets.MYSQL_USER }}
         MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-        MYSQL_DB: ${{ secrets.MYSQL_DB }}
+        MYSQL_DB: hosts
         HOST: "localhost"
       run: make hosts-api-test
+
+    - name: Set up MySQL Container for properties
+      run: |
+        docker stop hosts-db
+        docker run --name=properties-db -d -p 3306:3306 --rm -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+        -e MYSQL_DATABASE="properties" -e MYSQL_USER=${{ secrets.MYSQL_USER }} -e HOST="localhost" \
+        -e MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} mysql:8.0.25  
+
+    - name: Properties API Unit Tests
+      env:
+        MYSQL_USER: ${{ secrets.MYSQL_USER }}
+        MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+        MYSQL_DB: properties
+        HOST: "localhost"
+      run: |
+        while ! docker exec properties-db mysqladmin --user=${{ secrets.MYSQL_USER }} --password=${{ secrets.MYSQL_PASSWORD }} ping --silent &> /dev/null; do
+          echo "waiting for mysql container to be ready"
+          sleep 2
+        done
+
+        sleep 5
+        make properties-api-test
