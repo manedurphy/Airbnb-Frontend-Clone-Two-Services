@@ -1,36 +1,6 @@
-proxy-image:
-	cd Dane-Proxy && docker build -t static-files -f Dockerfile.prod .
-
-hosts-image-prod:
-	cd apis/hosts-api && go build -o hosts-api .
-	cd apis/hosts-api && docker build -f Dockerfile.prod -t hosts-api .    
-
-properties-image:
-	cd apis/properties-api && go build -o properties-api .
-	cd apis/properties-api && docker build -t properties-api .
-
-get-data-image:
-	cd apis/get-data-api && go build -o get-data-api .
-	cd apis/get-data-api && docker build -t get-data-api .
-
-client:
-	yarn run build:local
-
-build: client hosts-image-prod properties-image proxy-image get-data-image
-
-
-docker-push: build
-	docker tag properties-api manedurphy/properties-api
-	docker push manedurphy/properties-api
-
-	docker tag hosts-api manedurphy/hosts-api
-	docker push manedurphy/hosts-api
-
-	docker tag static-files manedurphy/static-files
-	docker push manedurphy/static-files
-	
-	docker tag get-data-api manedurphy/get-data-api
-	docker push manedurphy/get-data-api
+# KUBERNETES
+cluster:
+	kind create cluster --config=kind.yaml
 
 load: build
 	docker tag properties-api local/properties-api
@@ -44,9 +14,6 @@ load: build
 
 	docker tag static-files local/static-files
 	kind load docker-image local/static-files
-
-cluster:
-	kind create cluster --config=kind.yaml
 
 ingress-controller:
 	kubectl create namespace ingress-nginx
@@ -79,14 +46,61 @@ eks-destroy:
 hosts-api-test:
 	cd apis/hosts-api && ./tests.sh
 
+properties-api-test:
+	cd apis/properties-api && ./tests.sh
+
+test: hosts-api-test properties-api-test
+
+# COMMON
+proxy-image:
+	cd Dane-Proxy && docker build -t static-files -f Dockerfile.prod .
+
+get-data-image:
+	cd apis/get-data-api && go build -o get-data-api .
+	cd apis/get-data-api && docker build -t get-data-api .
+
+client:
+	yarn run build
+
+seed:
+	yarn run seed
+
 # DEVELOPMENT
 hosts-image-dev:
 	cd apis/hosts-api && go build -o hosts-api .
-	cd apis/hosts-api && docker build -f Dockerfile.dev -t hosts-api .   
+	cd apis/hosts-api && docker build -f Dockerfile.dev -t hosts-api .
 
-build-dev: client hosts-image-dev properties-image proxy-image get-data-image
+properties-image-dev:
+	cd apis/properties-api && go build -o properties-api .
+	cd apis/properties-api && docker build -f Dockerfile.dev -t properties-api .
+
+build-dev: client hosts-image-dev properties-image-dev proxy-image get-data-image
 
 compose: build-dev
 	docker-compose up --build -d
 	sleep 5
 	yarn run seed
+
+# PRODUCTION
+hosts-image-prod:
+	cd apis/hosts-api && go build -o hosts-api .
+	cd apis/hosts-api && docker build -f Dockerfile.prod -t hosts-api .    
+
+properties-image-prod:
+	cd apis/properties-api && go build -o properties-api .
+	cd apis/properties-api && docker build -t properties-api .
+
+build-prod: client hosts-image-prod properties-image proxy-image get-data-image
+
+docker-push: build
+	docker tag properties-api manedurphy/properties-api
+	docker push manedurphy/properties-api
+
+	docker tag hosts-api manedurphy/hosts-api
+	docker push manedurphy/hosts-api
+
+	docker tag static-files manedurphy/static-files
+	docker push manedurphy/static-files
+	
+	docker tag get-data-api manedurphy/get-data-api
+	docker push manedurphy/get-data-api

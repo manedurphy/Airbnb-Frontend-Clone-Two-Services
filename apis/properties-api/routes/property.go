@@ -2,6 +2,7 @@ package property
 
 import (
 	"errors"
+	"flag"
 	"log"
 	"net/http"
 	"os"
@@ -11,24 +12,32 @@ import (
 	"github.com/google/uuid"
 )
 
+var (
+	test = flag.Bool("test", false, "set to true when running unit tests")
+)
+
 func CreateProperty(c *gin.Context) {
+	flag.Parse()
 	req := CreatePropertyRequest{}
 
 	if err := c.ShouldBind(&req); err != nil {
-		panic(err)
+		sendResponse(c, gin.H{"message": "invalid payload"}, 400)
+		return
 	}
 
 	p := db.Property{}
 	setProps(&p, req)
 
-	err := confirmHostExists(p.HostId)
+	if !*test {
+		err := confirmHostExists(p.HostId)
 
-	if err != nil {
-		c.JSON(404, gin.H{
-			"message": err.Error(),
-		})
+		if err != nil {
+			c.JSON(404, gin.H{
+				"message": err.Error(),
+			})
 
-		return
+			return
+		}
 	}
 
 	db.MySqlDb.Create(&p)
@@ -90,10 +99,6 @@ func GetPropertiesHostedByData(c *gin.Context) {
 		"cohosts":        cohosts,
 		"hostId":         property.HostId,
 	})
-}
-
-type GetSuperhostStatusResponse struct {
-	IsSuperhost bool `json:"isSuperhost"`
 }
 
 func GetPropertiesPhotoHeaderData(c *gin.Context) {
@@ -165,4 +170,8 @@ func confirmHostExists(hostId uuid.UUID) error {
 	}
 
 	return nil
+}
+
+func sendResponse(c *gin.Context, response interface{}, statusCode int) {
+	c.JSON(statusCode, response)
 }

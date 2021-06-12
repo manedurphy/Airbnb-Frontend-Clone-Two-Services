@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCreateLanguageMethod(t *testing.T) {
+func TestCreateLanguage(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	db.Connect()
 
