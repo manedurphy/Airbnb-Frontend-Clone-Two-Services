@@ -1,14 +1,12 @@
 name: CI/CD Workflow
 
 on:
-  push:
-    branches: [ testing ]
   pull_request:
     branches: [ master ]
 
 jobs:
 
-  build:
+  unit_tests:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,7 +20,7 @@ jobs:
       run: |
         sudo apt update -y
         sudo apt-get -y install make
-    
+
     - name: Set up MySQL Container for hosts
       run: |
         docker run --name=hosts-db -d -p 3306:3306 --rm -e MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
