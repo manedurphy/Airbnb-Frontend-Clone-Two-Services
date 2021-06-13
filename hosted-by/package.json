@@ -5,12 +5,12 @@
     "main": "index.js",
     "proxy": "http://localhost:5000",
     "scripts": {
-        "test": "jest --detectOpenHandles --watchAll",
         "start": "webpack serve",
         "build": "webpack",
         "watch": "webpack -w",
         "server": "node backend/serverStart.js",
-        "seed": "node backend/data/seedScripts"
+        "server:dev": "nodemon backend/serverStart.js",
+        "seed": "node backend/data/scripts"
     },
     "keywords": [],
     "author": "",
@@ -19,7 +19,6 @@
         "axios": "^0.21.1",
         "express": "^4.17.1",
         "mysql2": "^2.2.5",
-        "redis": "^3.1.2",
         "sequelize": "^6.5.0"
     },
     "devDependencies": {
@@ -44,6 +43,7 @@
         "jest-svg-transformer": "^1.0.0",
         "mini-css-extract-plugin": "^1.3.3",
         "msw": "^0.25.0",
+        "nodemon": "^2.0.7",
         "react": "^17.0.1",
         "react-dom": "^17.0.1",
         "react-icons": "^4.1.0",
@@ -55,6 +55,6 @@
         "supertest": "^6.1.3",
         "webpack": "^5.12.1",
         "webpack-cli": "^4.3.1",
-        "webpack-dev-server": "^3.11.1"
+        "webpack-dev-server": "^3.11.2"
     }
 }
