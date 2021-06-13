@@ -1,3 +1,5 @@
+VERSION=1.0.0
+
 # KUBERNETES
 cluster:
 	kind create cluster --config=kind.yaml
@@ -20,17 +22,22 @@ ingress-controller:
 	helm install --namespace=ingress-nginx ingress-nginx ingress-nginx/ingress-nginx
 	kubectl wait --namespace=ingress-nginx --for=condition=Ready --timeout=5m pod -l app.kubernetes.io/name=ingress-nginx
 
+ingress-controller-destroy:
+	kubectl delete ns ingress-nginx --force --grace-period=0
+
 deploy-local:
 	kubectl --namespace=default apply -f k8s/local
 
 deploy-prod:
-	kubectl --namespace=default apply -f k8s/aws
+	kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+	kubectl --namespace=default apply -f k8s/cloud
 
 destroy-local:
 	kubectl --namespace=default delete -f k8s/local
 
 destroy-prod:
-	kubectl --namespace=default delete -f k8s/aws
+	kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+	kubectl --namespace=default delete -f k8s/cloud
 
 forward:
 	kubectl config set-context --current --namespace=ingress-nginx
@@ -93,14 +100,17 @@ properties-image-prod:
 build-prod: client hosts-image-prod properties-image-prod proxy-image get-data-image
 
 docker-push: build-prod
-	docker tag properties-api manedurphy/properties-api
-	docker push manedurphy/properties-api
+	docker tag properties-api manedurphy/properties-api:$(VERSION)
+	docker push manedurphy/properties-api:$(VERSION)
 
-	docker tag hosts-api manedurphy/hosts-api
-	docker push manedurphy/hosts-api
+	docker tag hosts-api manedurphy/hosts-api:$(VERSION)
+	docker push manedurphy/hosts-api:$(VERSION)
 
-	docker tag static-files manedurphy/static-files
-	docker push manedurphy/static-files
+	docker tag static-files manedurphy/static-files:$(VERSION)
+	docker push manedurphy/static-files:$(VERSION)
 	
-	docker tag get-data-api manedurphy/get-data-api
-	docker push manedurphy/get-data-api
+	docker tag get-data-api manedurphy/get-data-api:$(VERSION)
+	docker push manedurphy/get-data-api:$(VERSION)
+
+linode-cli:
+	docker run --rm -it -v $(shell pwd):/work -w /work --entrypoint /bin/bash manedurphy/linode-cli

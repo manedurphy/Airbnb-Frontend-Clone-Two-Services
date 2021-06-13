@@ -15,13 +15,32 @@ spec:
         app: static-deploy
     spec:
       containers:
-      - image: manedurphy/proxy-service
-        name: proxy-service
+      - image: manedurphy/static-files
+        name: static-files
         env:
         - name: HOSTS_API
           value: http://hosts-service:8080
         - name: PROPERTIES_API
           value: http://properties-service:8081
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "50m"
+          limits:
+            memory: "200Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          failureThreshold: 30
+          periodSeconds: 10
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -49,7 +68,14 @@ spec:
           - "redis-write-service.default.svc.cluster.local"
           - "6379"
           - "--protected-mode"
-          - "no" 
+          - "no"
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "25m"
+          limits:
+            memory: "75Mi"
+            cpu: "50m"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -95,19 +121,29 @@ spec:
       containers:
       - image: manedurphy/properties-api
         name: properties-api
-        env: # change to secrets
+        env:
         - name: HOST
-          value: properties-db.czsnmstr0khj.us-east-1.rds.amazonaws.com
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: HOST
         - name: MYSQL_USER
-          value: manedurphy
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: MYSQL_USER
         - name: MYSQL_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: MYSQL_PASSWORD
+        - name: MYSQL_DB
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: MYSQL_PROPERTIES_DB
         - name: HOSTS_API
           value: http://hosts-api-service:8080
-        - name: MYSQL_DB
-          value: properties
-        # - name: DROP_TABLES
-        #   value: "true"
         resources:
           requests:
             memory: "100Mi"
@@ -147,19 +183,27 @@ spec:
       containers:
       - image: manedurphy/hosts-api
         name: hosts-api
-        env: # change to secrets
+        env:
         - name: HOST
-          value: hosts-db.czsnmstr0khj.us-east-1.rds.amazonaws.com 
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: HOST
         - name: MYSQL_USER
-          value: manedurphy
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: MYSQL_USER
         - name: MYSQL_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: MYSQL_PASSWORD
         - name: MYSQL_DB
-          value: hosts
-        # - name: DROP_TABLES
-        #   value: "true"
-        - name: PROPERTIES_API
-          value: http://properties-api-service:8081
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: MYSQL_HOSTS_DB
         resources:
           requests:
             memory: "100Mi"
@@ -227,3 +271,59 @@ spec:
             port: 8000
           failureThreshold: 30
           periodSeconds: 10
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: k8s-autoscaler
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: k8s-autoscale
+  template:
+    metadata:
+      labels:
+        app: k8s-autoscale
+    spec:
+      imagePullSecrets:
+      - name: regcred
+      containers:
+      - name: k8s-autoscale
+        image: manedurphy/linode-autoscaler
+        env:
+        - name: LINODE_PERSONAL_ACCCESS_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: linode-personal-access-token-k8s-autoscaler
+              key: token
+        - name:  LINODE_LKE_CLUSTER_ID
+          value: "28752"
+        - name:  LINODE_LKE_CLUSTER_POOL_MINIMUM_NODES
+          value: "2"
+        - name:  LINODE_LKE_CLUSTER_POOL_ID
+          value: "43150"
+        - name:  AUTOSCALE_TRIGGER
+          value: "cpu"
+        - name:  AUTOSCALE_UP_PERCENTAGE
+          value: "60"
+        - name:  AUTOSCALE_DOWN_PERCENTAGE
+          value: "30"
+        - name:  AUTOSCALE_QUERY_INTERVAL
+          value: "10"
+        - name:  AUTOSCALE_THRESHOLD_COUNT
+          value: "3"
+        - name:  AUTOSCALE_NUMBER_OF_NODES
+          value: "1"
+        - name:  AUTOSCALE_WAIT_TIME_AFTER_SCALING
+          value: "150"
+        resources:
+          requests:
+            memory: 32Mi
+          limits:
+            memory: 32Mi
