@@ -1,10 +1,10 @@
 const { resolve } = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const header = resolve(__dirname, 'Dane-Service-Header', 'frontend', 'src', 'index.jsx');
-const headerNodeModules = resolve(__dirname, 'Dane-Service-Header', 'node_modules');
-const hostedby = resolve(__dirname, 'Dane-Service-HostedBy', 'frontend', 'src', 'index.jsx');
-const hostedbyNodeModules = resolve(__dirname, 'Dane-Service-HostedBy', 'node_modules');
+const header = resolve(__dirname, 'photo-header', 'frontend', 'src', 'index.jsx');
+const headerNodeModules = resolve(__dirname, 'photo-header', 'node_modules');
+const hostedby = resolve(__dirname, 'hosted-by', 'frontend', 'src', 'index.jsx');
+const hostedbyNodeModules = resolve(__dirname, 'hosted-by', 'node_modules');
 
 module.exports = {
     entry: {
@@ -36,7 +36,7 @@ module.exports = {
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: resolve(__dirname, 'Dane-Proxy', 'public', 'index.html'),
+            template: resolve(__dirname, 'static-server', 'public', 'index.html'),
         }),
         new MiniCssExtractPlugin({ filename: 'style.css' }),
     ],

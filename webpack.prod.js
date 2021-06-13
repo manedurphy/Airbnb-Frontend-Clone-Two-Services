@@ -9,7 +9,7 @@ module.exports = merge(common, {
     mode: 'production',
     output: {
         filename: '[name].bundle.js',
-        path: resolve(__dirname, 'Dane-Proxy', 'dist'),
+        path: resolve(__dirname, 'static-server', 'dist'),
         publicPath: '/',
     },
     plugins: [

@@ -2,7 +2,7 @@ VERSION=1.0.0
 
 # KUBERNETES
 cluster:
-	kind create cluster --config=kind.yaml
+	kind create cluster --config=kubeconfig/kind.yaml
 
 load: build
 	docker tag properties-api local/properties-api
@@ -44,10 +44,10 @@ forward:
 	kubectl port-forward service/ingress-nginx-controller 5000:80
 
 eks:
-	eksctl create cluster --config-file eksctl.yaml
+	eksctl create cluster --config-file kubeconfig/eksctl.yaml
 
 eks-destroy:
-	eksctl delete cluster --config-file eksctl.yaml
+	eksctl delete cluster --config-file kubeconfig/eksctl.yaml
 
 # TESTING
 hosts-api-test:
@@ -59,14 +59,14 @@ properties-api-test:
 test: hosts-api-test properties-api-test
 
 # COMMON
-proxy-image:
-	cd Dane-Proxy && docker build -t static-files -f Dockerfile.prod .
+static-files-image:
+	cd static-server && docker build -t static-files -f Dockerfile.prod .
 
 get-data-image:
 	cd apis/get-data-api && go build -o get-data-api .
 	cd apis/get-data-api && docker build -t get-data-api .
 
-client:
+webpack:
 	yarn run build
 
 seed:
@@ -81,7 +81,7 @@ properties-image-dev:
 	cd apis/properties-api && go build -o properties-api .
 	cd apis/properties-api && docker build -f Dockerfile.dev -t properties-api .
 
-build-dev: client hosts-image-dev properties-image-dev proxy-image get-data-image
+build-dev: webpack hosts-image-dev properties-image-dev static-files-image get-data-image
 
 compose: build-dev
 	docker-compose up --build -d
@@ -97,7 +97,7 @@ properties-image-prod:
 	cd apis/properties-api && go build -o properties-api .
 	cd apis/properties-api && docker build -t properties-api -f Dockerfile.prod .
 
-build-prod: client hosts-image-prod properties-image-prod proxy-image get-data-image
+build-prod: webpack hosts-image-prod properties-image-prod static-files-image get-data-image
 
 docker-push: build-prod
 	docker tag properties-api manedurphy/properties-api:$(VERSION)
