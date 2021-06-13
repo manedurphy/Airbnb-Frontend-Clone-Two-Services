@@ -1,14 +1,18 @@
 const axios = require('axios');
 const faker = require('faker');
+
+// For use with Docker compose
 const hostsAPI = 'http://localhost:8080';
 const propertiesAPI = 'http://localhost:8081';
-// const hostsAPI = 'http://localhost:5000';
-// const propertiesAPI = 'http://localhost:5000';
-const s3Endpoint = 'https://airbnb-clone-photos.s3.amazonaws.com/houses/images';
+
+// For cloud load balancer
+// const hostsAPI = 'http://45.79.230.251';
+// const propertiesAPI = 'http://45.79.230.251';
+
+const s3Endpoint = process.env.BUCKET_URL;
 
 const languages = ['English', 'Spanish', 'Japanese', 'Korean', 'French', 'Russian'];
 const languageRequests = [];
-// const hosts = [];
 
 languages.forEach((language) =>
     languageRequests.push(axios.post(`${hostsAPI}/hosts/create-language`, { name: language })),
@@ -16,7 +20,7 @@ languages.forEach((language) =>
 Promise.all(languageRequests).then(() => {
     console.log('Languages seeded!');
     const createHostsRequests = [];
-    for (let i = 1; i <= 100; i++) {
+    for (let i = 1; i < 100; i++) {
         const name = faker.name.firstName();
         createHostsRequests.push(
             axios.post(`${hostsAPI}/hosts/create-host`, {

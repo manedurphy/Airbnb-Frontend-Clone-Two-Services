@@ -71,6 +71,10 @@ app.get('/style.css', (_, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'style.css'));
 });
 
+app.get('/healthz', (_, res) => {
+    res.status(200).json({ message: 'healthy!' });
+});
+
 app.use(express.static('dist'));
 
 app.get('*', (_req, res) => {

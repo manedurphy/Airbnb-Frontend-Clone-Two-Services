@@ -8,8 +8,8 @@ img
 data
 storage
 screenshots
-stress
 apis/get-data-api/get-data-api
 apis/hosts-api/hosts-api
 apis/properties-api/properties-api
 apis/properties-api/ping.sh
+kubeconfig/kubeconfig.yaml
