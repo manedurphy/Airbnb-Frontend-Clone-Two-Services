@@ -20,6 +20,7 @@ module.exports = class ServiceRepository {
                 about: this.data.Host.about,
                 identityVerified: this.data.Host.identityVerified,
                 isSuperhost: this.data.Host.isSuperhost,
+                numberOfReviews: this.data.Host.numberOfReviews,
                 languages: this.data.Host.HostLanguages.map((language) => {
                     return {
                         name: language.Language.name,
