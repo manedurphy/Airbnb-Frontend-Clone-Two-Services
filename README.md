@@ -123,7 +123,4 @@ npm run seed
 
 Nice! You should now seed a room at `http://localhost:5000/rooms/1`.
 
-
-I had a great time with this project and feel very comfortable with HTML, CSS, and JS. I can safely say that I prefer backend techonlogies, but this was fun and I can appreciate the skillset of frontend developers.
-
 [Showcase](https://www.youtube.com/watch?v=PWFy8-X4XdM&list=PLAIQMt1Wkn6hvVJO5QUP6xUtDCXpSioJN&index=1)
