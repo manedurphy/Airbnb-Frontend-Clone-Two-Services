@@ -1,6 +1,4 @@
 const router = require('express').Router();
-const readClient = require('../redis/readClient');
-const writeClient = require('../redis/writeClient');
 const responses = require('../constants/routeResponses');
 const Host = require('../models/Host');
 const Response = require('../constants/Response');
@@ -17,18 +15,10 @@ router.get('/:propertyId', async (req, res) => {
             return;
         }
 
-        readClient.get(`hostedby${propertyId}`, async (_, data) => {
-            if (!data) {
-                const hostedBy = await repo.getData();
-                writeClient.setex(`hostedby${propertyId}`, 3600, JSON.stringify(hostedBy));
-                res.status(200).json(hostedBy);
-            } else {
-                console.log('Retrieved data from Redis store!');
-                res.status(200).json(JSON.parse(data));
-            }
-        });
+        const hostedBy = await repo.getData();
+        res.status(200).json(hostedBy);
     } catch (error) {
-        console.error('[ERROR] ', error);
+        console.error('[ERROR]', error);
         res.status(500).json(new Response(responses.serverError));
     }
 });

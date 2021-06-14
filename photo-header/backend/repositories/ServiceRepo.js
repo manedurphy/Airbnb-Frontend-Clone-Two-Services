@@ -7,6 +7,7 @@ module.exports = class ServiceRepository {
     constructor(id) {
         this.id = id;
         this.data = {
+            title: '',
             photos: [],
             isSuperhost: fallbackData.isSuperhost,
             location: fallbackData.location,
@@ -34,6 +35,7 @@ module.exports = class ServiceRepository {
             });
 
             this.data.photos = photos;
+            this.data.title = photos[0].Property.title;
         } catch (error) {
             console.error('[ERROR]', error);
             this.data.photos = fallbackData.photos;
@@ -43,11 +45,11 @@ module.exports = class ServiceRepository {
     async getSuperhostStatus() {
         try {
             const { hostId } = await Property.findByPk(this.id);
-            const { data } = await axios.get(`${process.env.HOSTEDBY_DOMAIN}/api/hostedbyService/superhost/${hostId}`);
+            const { data } = await axios.get(`${process.env.HOSTEDBY_DOMAIN}/api/hosted-by/superhost/${hostId}`);
 
             this.data.isSuperhost = data;
         } catch (error) {
-            console.error('[ERROR]: ', error);
+            console.error('[ERROR]', error);
             this.data.isSuperhost = fallbackData.isSuperhost;
         }
     }

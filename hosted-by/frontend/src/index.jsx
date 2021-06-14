@@ -5,6 +5,9 @@ import { Provider } from 'react-redux';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { store } from './redux/store';
 
+// Comment out for production build
+//import './index.css'
+
 ReactDOM.render(
     <Router>
         <Provider store={store}>

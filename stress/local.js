@@ -6,8 +6,6 @@ export let options = {
         { duration: '2m', target: 200 },
         { duration: '1m', target: 200 },
         { duration: '4m', target: 300 },
-        { duration: '1m', target: 300 },
-        { duration: '5m', target: 400 },
         { duration: '5m', target: 400 },
         { duration: '5m', target: 0 },
     ],
@@ -21,13 +19,13 @@ export let options = {
 // eslint-disable-next-line import/no-anonymous-default-export
 export default function () {
     let responses;
-    const BASE_URL = 'http://45.79.230.252';
+    const BASE_URL = 'http://localhost:5000';
     const roomNumber = Math.floor(Math.random() * 99 + 1);
 
     responses = http.batch([
         ['GET', `${BASE_URL}/rooms/1`, null, { tags: { name: 'StaticFiles' } }],
         ['GET', `${BASE_URL}/api/photo-header/${roomNumber}`, null, { tags: { name: 'PhotoHeaderData' } }],
-        ['GET', `${BASE_URL}/api/hosted-by/${roomNumber}`, null, { tags: { name: 'HostedBy' } }],
+        ['GET', `${BASE_URL}/api/hosted-by/${roomNumber}`, null, { tags: { name: 'HostedByData' } }],
     ]);
 
     responses.forEach((res) => {

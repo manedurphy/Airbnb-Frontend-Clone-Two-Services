@@ -5,7 +5,7 @@ node_modules
 dist
 img
 *.jpg
-data
+data/*
 storage
 screenshots
 apis/get-data-api/get-data-api

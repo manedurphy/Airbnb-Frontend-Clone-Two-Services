@@ -68,6 +68,7 @@ get-data-image:
 
 webpack:
 	yarn run build
+	cp -R static-server/dist proxy
 
 seed:
 	yarn run seed
