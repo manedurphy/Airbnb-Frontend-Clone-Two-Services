@@ -81,4 +81,4 @@ app.get('*', (_req, res) => {
     res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 
-app.listen(port, () => console.log(`Proxy started on port ${port}...`));
+app.listen(port, () => console.log(`Serving static files on port ${port}...`));
