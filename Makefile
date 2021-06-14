@@ -4,7 +4,7 @@ VERSION=1.0.0
 cluster:
 	kind create cluster --config=kubeconfig/kind.yaml
 
-load: build
+load: build-dev
 	docker tag properties-api local/properties-api
 	kind load docker-image local/properties-api
 

@@ -15,9 +15,9 @@ spec:
         app: static-files-deploy
     spec:
       containers:
-      - image: local/static-files-service
+      - image: local/static-files
         imagePullPolicy: Never
-        name: static-files-service
+        name: static-files
         env:
         - name: HOSTS_API
           value: http://hosts-service:8080
@@ -99,17 +99,15 @@ spec:
         name: properties-api
         env:
         - name: HOST
-          value: properties-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
+          value: mysql-properties-service
         - name: MYSQL_USER
-          value: manedurphy
+          value: root
         - name: MYSQL_PASSWORD
           value: password
         - name: HOSTS_API
           value: http://hosts-api-service:8080
         - name: MYSQL_DB
           value: properties
-        - name: DROP_TABLES
-          value: "true"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -133,15 +131,13 @@ spec:
         name: hosts-api
         env:
         - name: HOST
-          value: hosts-db.cfxogr94hjre.us-east-1.rds.amazonaws.com
+          value: mysql-hosts-service
         - name: MYSQL_USER
-          value: manedurphy
+          value: root
         - name: MYSQL_PASSWORD
           value: password
         - name: MYSQL_DB
           value: hosts
-        - name: DROP_TABLES
-          value: "true"
         - name: PROPERTIES_API
           value: http://properties-api-service:8081
 ---
@@ -174,3 +170,53 @@ spec:
           value: http://hosts-api-service:8080
         - name: PROPERTIES_API
           value: http://properties-api-service:8081
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-hosts-deploy
+  name: mysql-hosts-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-hosts-deploy
+  template:
+    metadata:
+      labels:
+        app: mysql-hosts-deploy
+    spec:
+      containers:
+      - image: mysql:8.0.25
+        name: mysql-hosts
+        env:
+        - name: MYSQL_DATABASE
+          value: hosts
+        - name: MYSQL_ROOT_PASSWORD
+          value: password
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mysql-properties-deploy
+  name: mysql-properties-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql-properties-deploy
+  template:
+    metadata:
+      labels:
+        app: mysql-properties-deploy
+    spec:
+      containers:
+      - image: mysql:8.0.25
+        name: mysql-properties
+        env:
+        - name: MYSQL_DATABASE
+          value: properties
+        - name: MYSQL_ROOT_PASSWORD
+          value: password

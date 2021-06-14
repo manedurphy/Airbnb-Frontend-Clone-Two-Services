@@ -4,7 +4,7 @@ import { sleep, check } from 'k6';
 export let options = {
     stages: [
         { duration: '1m', target: 50 },
-        { duration: '1m', target: 50 },
+        { duration: '10m', target: 50 },
         { duration: '1m', target: 0 },
     ],
 
@@ -17,7 +17,7 @@ export let options = {
 // eslint-disable-next-line import/no-anonymous-default-export
 export default function () {
     let responses;
-    const BASE_URL = 'http://localhost:5000';
+    const BASE_URL = 'http://192.53.124.172:5000';
     const roomNumber = Math.floor(Math.random() * 100 + 1);
 
     responses = http.batch([
