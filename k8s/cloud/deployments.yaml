@@ -15,13 +15,13 @@ spec:
         app: static-deploy
     spec:
       containers:
-      - image: manedurphy/static-files
+      - image: manedurphy/static-files:1.0.0
         name: static-files
         env:
         - name: HOSTS_API
-          value: http://hosts-service:8080
+          value: http://hosts-api-service:8080
         - name: PROPERTIES_API
-          value: http://properties-service:8081
+          value: http://properties-api-service:8081
         resources:
           requests:
             memory: "100Mi"
@@ -119,7 +119,7 @@ spec:
         app: properties-api-deploy
     spec:
       containers:
-      - image: manedurphy/properties-api
+      - image: manedurphy/properties-api:1.0.0
         name: properties-api
         env:
         - name: HOST
@@ -181,7 +181,7 @@ spec:
         app: hosts-api-deploy
     spec:
       containers:
-      - image: manedurphy/hosts-api
+      - image: manedurphy/hosts-api:1.0.0
         name: hosts-api
         env:
         - name: HOST
@@ -241,7 +241,7 @@ spec:
         app: get-data-api-deploy
     spec:
       containers:
-      - image: manedurphy/get-data-api
+      - image: manedurphy/get-data-api:1.0.0
         name: get-data-api
         env:
         - name: REDIS_READ_URL
@@ -305,7 +305,7 @@ spec:
         - name:  LINODE_LKE_CLUSTER_ID
           value: "28752"
         - name:  LINODE_LKE_CLUSTER_POOL_MINIMUM_NODES
-          value: "2"
+          value: "3"
         - name:  LINODE_LKE_CLUSTER_POOL_ID
           value: "43150"
         - name:  AUTOSCALE_TRIGGER

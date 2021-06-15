@@ -25,7 +25,23 @@ ingress-controller:
 ingress-controller-destroy:
 	kubectl delete ns ingress-nginx --force --grace-period=0
 
+prometheus:
+	kubectl create namespace monitoring
+	helm install --namespace=monitoring prometheus prometheus-community/kube-prometheus-stack
+
+prometheus-destroy:
+	kubectl delete namespace monitoring
+
+prometheus-ui:
+	kubectl port-forward -n monitoring service/prometheus-kube-prometheus-prometheus 9090:9090
+
+grafana:
+	kubectl port-forward -n monitoring deployment/prometheus-grafana 3000:3000
+
 deploy-local:
+	kubectl --namespace=default apply -f k8s/local/databases.yaml
+	kubectl wait --namespace=default --for=condition=Ready --timeout=5m pod -l app=mysql-hosts-deploy
+	kubectl wait --namespace=default --for=condition=Ready --timeout=5m pod -l app=mysql-properties-deploy
 	kubectl --namespace=default apply -f k8s/local
 
 deploy-prod:
@@ -115,3 +131,9 @@ docker-push: build-prod
 
 linode-cli:
 	docker run --rm -it -v $(shell pwd):/work -w /work --entrypoint /bin/bash manedurphy/linode-cli
+
+terraform-apply:
+	terraform apply --auto-approve -var-file="secret.tfvars"
+
+terraform-destroy:
+	terraform destroy --auto-approve -var-file="secret.tfvars"
