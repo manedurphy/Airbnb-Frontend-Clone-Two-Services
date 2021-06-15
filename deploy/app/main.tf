@@ -511,6 +511,108 @@ resource "kubernetes_deployment" "get-data-api-deploy" {
   }
 }
 
+resource "kubernetes_deployment" "k8s-autoscaler" {
+  metadata {
+    name = "k8s-autoscaler"
+    labels = {
+      app = "k8s-autoscaler"
+    }
+  }
+
+  spec {
+    replicas = 1
+    strategy {
+      type = "RollingUpdate"
+      rolling_update {
+        max_surge = 1
+        max_unavailable = 0
+      }
+    }
+    selector {
+      match_labels = {
+        app = "k8s-autoscaler"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "k8s-autoscaler"
+        }
+      }
+      spec {
+        image_pull_secrets {
+          name = "docker-cfg"
+        }
+        container {
+          image = "manedurphy/linode-autoscaler"
+          name = "k8s-autoscale"
+          env {
+            name = "LINODE_PERSONAL_ACCCESS_TOKEN"
+            value_from {
+              secret_key_ref {
+                name = "linode-personal-access-token-k8s-autoscaler"
+                key = "token"
+              }
+            }
+          }
+
+          env {
+            name = "LINODE_LKE_CLUSTER_ID"
+            value = "28912"
+          }
+
+          env {
+            name = "LINODE_LKE_CLUSTER_POOL_MINIMUM_NODES"
+            value = "3"
+          }
+          env {
+            name = "LINODE_LKE_CLUSTER_POOL_ID"
+            value = "43352"
+          }
+          env {
+            name = "AUTOSCALE_TRIGGER"
+            value = "cpu"
+          }
+          env {
+            name = "AUTOSCALE_UP_PERCENTAGE"
+            value = "60"
+          }
+          env {
+            name = "AUTOSCALE_DOWN_PERCENTAGE"
+            value = "30"
+          }
+          env {
+            name = "AUTOSCALE_QUERY_INTERVAL"
+            value = "15"
+          }
+          env {
+            name = "AUTOSCALE_THRESHOLD_COUNT"
+            value = "3"
+          }
+          env {
+            name = "AUTOSCALE_NUMBER_OF_NODES"
+            value = "1"
+          }
+          env {
+            name = "AUTOSCALE_WAIT_TIME_AFTER_SCALING"
+            value = "150"
+          }
+
+          resources {
+            requests = {
+              memory = "32Mi"
+            }
+            limits = {
+              memory = "32Mi"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 resource "kubernetes_service" "static-files-service" {
   metadata {
     name = "static-files-service"
@@ -740,8 +842,8 @@ resource "kubernetes_horizontal_pod_autoscaler" "redis-read-deploy" {
   }
 
   spec {
-    max_replicas = 50
-    min_replicas = 5
+    max_replicas = 25
+    min_replicas = 3
 
     scale_target_ref {
       api_version = "apps/v1"

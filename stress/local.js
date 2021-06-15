@@ -19,7 +19,7 @@ export let options = {
 // eslint-disable-next-line import/no-anonymous-default-export
 export default function () {
     let responses;
-    const BASE_URL = 'http://192.53.124.172:5000';
+    const BASE_URL = 'http://45.79.230.31';
     const roomNumber = Math.floor(Math.random() * 99 + 1);
 
     responses = http.batch([
