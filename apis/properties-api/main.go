@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"properties-api/db"
 	property "properties-api/routes"
 
@@ -9,10 +8,6 @@ import (
 )
 
 func main() {
-	if os.Getenv("GO_ENV") == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
 	router := gin.Default()
 	db.Connect()
 

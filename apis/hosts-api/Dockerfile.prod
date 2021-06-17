@@ -4,4 +4,6 @@ WORKDIR /app
 
 COPY ./hosts-api ./hosts-api
 
+ENV GIN_MODE=release
+
 ENTRYPOINT ["/app/hosts-api"]

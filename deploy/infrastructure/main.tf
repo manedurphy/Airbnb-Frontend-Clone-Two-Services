@@ -22,3 +22,17 @@ resource "linode_lke_cluster" "airbnb-clone" {
         count = 3
     }
 }
+
+resource "linode_instance" "database" {
+    label = "airbnb-clone-db"
+    image = var.mysql_image_id
+    region = "us-west"
+    type = "g6-standard-2"
+    authorized_keys = [var.authorized_key]
+    root_pass = var.mysql_instance_password
+
+    tags = ["prod"]
+    timeouts {
+      create = "4m"
+    }
+}

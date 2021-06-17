@@ -4,11 +4,41 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">= 2.0"
     }
+
+    helm = {
+      source = "hashicorp/helm"
+      version = "2.2.0"
+    }
   }
 }
 
 provider "kubernetes" {
   config_path = var.kubeconfig_path
+}
+
+provider "helm" {
+  kubernetes {
+    config_path = var.kubeconfig_path
+  }
+}
+
+resource "kubernetes_namespace" "ingress-nginx" {
+  metadata {
+    name = "ingress-nginx"
+  }
+}
+
+resource "helm_release" "ingress_nginx" {
+  name       = "nginx-ingress-controller"
+  namespace =  "ingress-nginx"
+
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "nginx-ingress-controller"
+
+  set {
+    name  = "service.type"
+    value = "LoadBalancer"
+  }
 }
 
 resource "kubernetes_secret" "db-creds" {
@@ -854,3 +884,12 @@ resource "kubernetes_horizontal_pod_autoscaler" "redis-read-deploy" {
     target_cpu_utilization_percentage = 85
   }
 }
+
+# module "metrics-server" {
+#   source  = "cookielab/metrics-server/kubernetes"
+#   version = "0.11.1"
+#   metrics_server_option_kubelet_insecure_tls = true
+#   metrics_server_image = "k8s.gcr.io/metrics-server/metrics-server"
+#   metrics_server_image_tag = "v0.5.0"
+#   metrics_server_option_metric_resolution = "15s"
+# }

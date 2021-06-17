@@ -123,4 +123,8 @@ npm run seed
 
 Nice! You should now seed a room at `http://localhost:5000/rooms/1`.
 
+
+## Deploying on Linode with Terraform
+To be able to quickly evaluate the performance of the application, I have set up a workflow which utilizes `Terraform` to automate the deployment process of spinning up a Kubernetes cluster on `Linode` servers. I love working with the `Linode` Kubernetes Engine because it is extremely fast and allows me to run load tests in a production-like environment quickly and effectively. I have also started using `Linkerd` as a service mesh, which has a fantastic out-of-the-box featureset including the ability to read and visualize important metrics. I have added a video to my YouTube playlist to demonstrate this workflow.
+
 [Showcase](https://www.youtube.com/watch?v=PWFy8-X4XdM&list=PLAIQMt1Wkn6hvVJO5QUP6xUtDCXpSioJN&index=1)

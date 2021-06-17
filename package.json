@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --config webpack.prod.js",
     "load:local": "k6 run stress/loadLocal.js",
-    "seed": "node scripts/seed.js",
+    "seed": "node scripts/seed/languages.js && scripts/seed/records.sh",
     "start": "pm2 start ecosystem.config.js && pm2 monit",
     "stop": "pm2 stop ecosystem.config.js",
     "stress:local": "k6 run stress/local.js",

@@ -3,16 +3,11 @@ package main
 import (
 	"hosts-api/db"
 	host "hosts-api/routes"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	if os.Getenv("GO_ENV") == "production" {
-		gin.SetMode(gin.ReleaseMode)
-	}
-
 	router := gin.Default()
 	db.Connect()
 

@@ -17,6 +17,17 @@ load: build-dev
 	docker tag static-files local/static-files
 	kind load docker-image local/static-files
 
+mesh:
+	linkerd install | kubectl apply -f -
+	linkerd viz install | kubectl apply -f -
+	linkerd viz dashboard
+
+inject:
+	kubectl get deploy -o yaml | linkerd inject - | kubectl apply -f -
+
+uninject:
+	kubectl get deploy -o yaml | linkerd uninject - | kubectl apply -f -
+
 ingress-controller:
 	kubectl create namespace ingress-nginx
 	helm install --namespace=ingress-nginx ingress-nginx ingress-nginx/ingress-nginx
