@@ -13,3 +13,7 @@ apis/hosts-api/hosts-api
 apis/properties-api/properties-api
 apis/properties-api/ping.sh
 kubeconfig/kubeconfig.yaml
+secret.tfvars
+terraform.tfstate*
+.terraform
+*.hcl

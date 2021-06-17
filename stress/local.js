@@ -19,8 +19,8 @@ export let options = {
 // eslint-disable-next-line import/no-anonymous-default-export
 export default function () {
     let responses;
-    const BASE_URL = 'http://192.53.124.172:5000';
-    const roomNumber = Math.floor(Math.random() * 99 + 1);
+    const BASE_URL = 'http://23.239.6.56';
+    const roomNumber = Math.floor(Math.random() * 499 + 1);
 
     responses = http.batch([
         ['GET', `${BASE_URL}/rooms/1`, null, { tags: { name: 'StaticFiles' } }],

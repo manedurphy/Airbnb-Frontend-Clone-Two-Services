@@ -4,4 +4,6 @@ WORKDIR /app
 
 COPY ./properties-api ./properties-api
 
+ENV GIN_MODE=release
+
 ENTRYPOINT ["/app/properties-api"]
