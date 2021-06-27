@@ -2,12 +2,12 @@ const axios = require('axios');
 const faker = require('faker');
 
 // For use with Docker compose
-const hostsAPI = 'http://localhost:8080';
-const propertiesAPI = 'http://localhost:8081';
+// const hostsAPI = 'http://localhost:8080';
+// const propertiesAPI = 'http://localhost:8081';
 
 // For use with Kind
-// const hostsAPI = 'http://localhost:5000';
-// const propertiesAPI = 'http://localhost:5000';
+const hostsAPI = 'http://localhost:5000';
+const propertiesAPI = 'http://localhost:5000';
 
 // For cloud load balancer
 // const hostsAPI = 'http://45.79.230.64';
@@ -25,7 +25,7 @@ languages.forEach((language) =>
 console.log('Now seeding, please wait...');
 Promise.all(languageRequests).then(async () => {
     try {
-        console.log(`Iteration ${k + 1} of ${iterations}`);
+        // console.log(`Iteration ${k + 1} of ${iterations}`);
         const createHostsRequests = [];
         for (let i = 1; i < 100; i++) {
             const name = faker.name.firstName();

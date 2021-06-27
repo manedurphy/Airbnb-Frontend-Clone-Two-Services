@@ -15,14 +15,32 @@ spec:
         app: static-files-deploy
     spec:
       containers:
-      - image: local/static-files
-        imagePullPolicy: Never
+      - image: manedurphy/static-files:1.0.0@sha256:8637add1e2c2d7736c82aa2b982373b4776875688c9c9008881eea592b30c8f0
         name: static-files
         env:
         - name: HOSTS_API
           value: http://hosts-service:8080
         - name: PROPERTIES_API
           value: http://properties-service:8081
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "50m"
+          limits:
+            memory: "200Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /healthz
+            port: 5000
+          failureThreshold: 30
+          periodSeconds: 10
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,10 +65,17 @@ spec:
           - "redis-server"
         args:
           - "--replicaof"
-          - "redis-write-service.default.svc.cluster.local"
+          - "redis-write-service.airbnb.svc.cluster.local"
           - "6379"
           - "--protected-mode"
-          - "no" 
+          - "no"
+        resources:
+          requests:
+            memory: "50Mi"
+            cpu: "25m"
+          limits:
+            memory: "75Mi"
+            cpu: "50m"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -94,20 +119,49 @@ spec:
         app: properties-api-deploy
     spec:
       containers:
-      - image: local/properties-api
-        imagePullPolicy: Never
+      - image: manedurphy/properties-api:1.0.0@sha256:c5c343adea5219c2d4530dbcbb61bb35fed88a857246d6d84328c1d67355e706
         name: properties-api
         env:
         - name: HOST
-          value: mysql-properties-service
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: host
         - name: MYSQL_USER
-          value: root
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: username
         - name: MYSQL_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: password
         - name: HOSTS_API
           value: http://hosts-api-service:8080
         - name: MYSQL_DB
           value: properties
+        - name: HOSTS_API
+          value: http://hosts-api-service:8080
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "50m"
+          limits:
+            memory: "200Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /properties/healthz
+            port: 8081
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /properties/healthz
+            port: 8081
+          failureThreshold: 30
+          periodSeconds: 10
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -126,20 +180,47 @@ spec:
         app: hosts-api-deploy
     spec:
       containers:
-      - image: local/hosts-api
-        imagePullPolicy: Never
+      - image: manedurphy/hosts-api:1.0.0@sha256:b8f8d0644d1914d6b6676943df02925624efb7e073e673a999510889b2ac6dc3
         name: hosts-api
         env:
         - name: HOST
-          value: mysql-hosts-service
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: host
         - name: MYSQL_USER
-          value: root
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: username
         - name: MYSQL_PASSWORD
-          value: password
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: password
         - name: MYSQL_DB
           value: hosts
         - name: PROPERTIES_API
           value: http://properties-api-service:8081
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "50m"
+          limits:
+            memory: "200Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /hosts/healthz
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /hosts/healthz
+            port: 8080
+          failureThreshold: 30
+          periodSeconds: 10
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -158,8 +239,7 @@ spec:
         app: get-data-api-deploy
     spec:
       containers:
-      - image: local/get-data-api
-        imagePullPolicy: Never
+      - image: manedurphy/get-data-api:1.0.0@sha256:0de65b74cdd65cb0418ac16a13743f342a9072b206b1a9a9ab9221cb52bf90ee
         name: get-data-api
         env:
         - name: REDIS_READ_URL
@@ -170,3 +250,22 @@ spec:
           value: http://hosts-api-service:8080
         - name: PROPERTIES_API
           value: http://properties-api-service:8081
+        resources:
+          requests:
+            memory: "100Mi"
+            cpu: "50m"
+          limits:
+            memory: "200Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /api/healthz
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        startupProbe:
+          httpGet:
+            path: /api/healthz
+            port: 8000
+          failureThreshold: 30
+          periodSeconds: 10

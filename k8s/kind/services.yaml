@@ -1,0 +1,87 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: static-files-service
+spec:
+  selector:
+    app: static-files-deploy
+  ports:
+    - protocol: TCP
+      port: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: properties-api-service
+spec:
+  selector:
+    app: properties-api-deploy
+  ports:
+    - protocol: TCP
+      port: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hosts-api-service
+spec:
+  selector:
+    app: hosts-api-deploy
+  ports:
+    - protocol: TCP
+      port: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: get-data-api-service
+spec:
+  selector:
+    app: get-data-api-deploy
+  ports:
+    - protocol: TCP
+      port: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-write-service
+spec:
+  selector:
+    app: redis-write-deploy
+  ports:
+    - protocol: TCP
+      port: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-read-service
+spec:
+  selector:
+    app: redis-read-deploy
+  ports:
+    - protocol: TCP
+      port: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-hosts-service
+spec:
+  selector:
+    app: mysql-hosts-deploy
+  ports:
+    - protocol: TCP
+      port: 3306
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-properties-service
+spec:
+  selector:
+    app: mysql-properties-deploy
+  ports:
+    - protocol: TCP
+      port: 3306

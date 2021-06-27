@@ -272,58 +272,58 @@ spec:
           failureThreshold: 30
           periodSeconds: 10
 ---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: k8s-autoscaler
-spec:
-  replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 0
-  selector:
-    matchLabels:
-      app: k8s-autoscale
-  template:
-    metadata:
-      labels:
-        app: k8s-autoscale
-    spec:
-      imagePullSecrets:
-      - name: regcred
-      containers:
-      - name: k8s-autoscale
-        image: manedurphy/linode-autoscaler
-        env:
-        - name: LINODE_PERSONAL_ACCCESS_TOKEN
-          valueFrom:
-            secretKeyRef:
-              name: linode-personal-access-token-k8s-autoscaler
-              key: token
-        - name:  LINODE_LKE_CLUSTER_ID
-          value: "28752"
-        - name:  LINODE_LKE_CLUSTER_POOL_MINIMUM_NODES
-          value: "3"
-        - name:  LINODE_LKE_CLUSTER_POOL_ID
-          value: "43150"
-        - name:  AUTOSCALE_TRIGGER
-          value: "cpu"
-        - name:  AUTOSCALE_UP_PERCENTAGE
-          value: "60"
-        - name:  AUTOSCALE_DOWN_PERCENTAGE
-          value: "30"
-        - name:  AUTOSCALE_QUERY_INTERVAL
-          value: "10"
-        - name:  AUTOSCALE_THRESHOLD_COUNT
-          value: "3"
-        - name:  AUTOSCALE_NUMBER_OF_NODES
-          value: "1"
-        - name:  AUTOSCALE_WAIT_TIME_AFTER_SCALING
-          value: "150"
-        resources:
-          requests:
-            memory: 32Mi
-          limits:
-            memory: 32Mi
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: k8s-autoscaler
+# spec:
+#   replicas: 1
+#   strategy:
+#     type: RollingUpdate
+#     rollingUpdate:
+#       maxSurge: 1
+#       maxUnavailable: 0
+#   selector:
+#     matchLabels:
+#       app: k8s-autoscale
+#   template:
+#     metadata:
+#       labels:
+#         app: k8s-autoscale
+#     spec:
+#       imagePullSecrets:
+#       - name: regcred
+#       containers:
+#       - name: k8s-autoscale
+#         image: manedurphy/linode-autoscaler
+#         env:
+#         - name: LINODE_PERSONAL_ACCCESS_TOKEN
+#           valueFrom:
+#             secretKeyRef:
+#               name: linode-personal-access-token-k8s-autoscaler
+#               key: token
+#         - name:  LINODE_LKE_CLUSTER_ID
+#           value: "28752"
+#         - name:  LINODE_LKE_CLUSTER_POOL_MINIMUM_NODES
+#           value: "3"
+#         - name:  LINODE_LKE_CLUSTER_POOL_ID
+#           value: "43150"
+#         - name:  AUTOSCALE_TRIGGER
+#           value: "cpu"
+#         - name:  AUTOSCALE_UP_PERCENTAGE
+#           value: "60"
+#         - name:  AUTOSCALE_DOWN_PERCENTAGE
+#           value: "30"
+#         - name:  AUTOSCALE_QUERY_INTERVAL
+#           value: "10"
+#         - name:  AUTOSCALE_THRESHOLD_COUNT
+#           value: "3"
+#         - name:  AUTOSCALE_NUMBER_OF_NODES
+#           value: "1"
+#         - name:  AUTOSCALE_WAIT_TIME_AFTER_SCALING
+#           value: "150"
+#         resources:
+#           requests:
+#             memory: 32Mi
+#           limits:
+#             memory: 32Mi
