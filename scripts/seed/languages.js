@@ -4,10 +4,10 @@ const axios = require('axios');
 // const hostsAPI = 'http://localhost:8080';
 
 // For use with Kind
-const hostsAPI = 'http://localhost:5000';
+// const hostsAPI = 'http://localhost:5000';
 
 // For use with raspberry pis
-// const hostsAPI = 'http://10.0.0.251:32454';
+const hostsAPI = 'http://10.0.0.251:32454';
 
 // For cloud load balancer
 // const hostsAPI = 'http://23.239.6.56';

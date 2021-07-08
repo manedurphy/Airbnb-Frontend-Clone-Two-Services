@@ -38,6 +38,7 @@ ingress-controller-destroy:
 
 deploy-local:
 	kubectl create namespace airbnb
+	scripts/createSecrets.sh ${MYSQL_USER} ${MYSQL_PASSWORD} ${PROD_HOST}
 	kubectl --namespace=airbnb apply -f k8s/local
 
 deploy-kind:
@@ -116,34 +117,18 @@ properties-image-prod:
 
 build-prod: webpack hosts-image-prod properties-image-prod static-files-image get-data-image
 
-docker-push: build-prod
-	docker tag properties-api manedurphy/properties-api:$(VERSION)
-	docker push manedurphy/properties-api:$(VERSION)
-
-	docker tag hosts-api manedurphy/hosts-api:$(VERSION)
-	docker push manedurphy/hosts-api:$(VERSION)
-
-	docker tag static-files manedurphy/static-files:$(VERSION)
-	docker push manedurphy/static-files:$(VERSION)
-	
-	docker tag get-data-api manedurphy/get-data-api:$(VERSION)
-	docker push manedurphy/get-data-api:$(VERSION)
-
-docker-push-arm:
+docker-push: webpack
 	cd static-server && \
-	docker buildx build --platform linux/arm,linux/amd64,linux/arm64 -t manedurphy/static-files:1.0.0 -f Dockerfile.prod . --push
+	docker buildx build --platform linux/arm,linux/amd64,linux/arm64 -t manedurphy/static-files:$(VERSION) -f Dockerfile.prod . --push
 
 	cd apis/properties-api && \
-	env GOOS=linux GOARCH=arm64 go build -o properties-api . && \
-	docker buildx build --platform linux/arm,linux/amd64,linux/arm64 -t manedurphy/properties-api:1.0.0 -f Dockerfile.prod . --push
+	docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t manedurphy/properties-api:$(VERSION) -f Dockerfile.prod . --push
 
 	cd apis/hosts-api && \
-	env GOOS=linux GOARCH=arm64 go build -o hosts-api . && \
-	docker buildx build --platform linux/arm,linux/amd64,linux/arm64 -t manedurphy/hosts-api:1.0.0 -f Dockerfile.prod . --push
+	docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t manedurphy/hosts-api:$(VERSION) -f Dockerfile.prod . --push
 
 	cd apis/get-data-api && \
-	env GOOS=linux GOARCH=arm64 go build -o get-data-api . && \
-	docker buildx build --platform linux/arm,linux/amd64,linux/arm64 -t manedurphy/get-data-api:1.0.0 -f Dockerfile . --push
+	docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t manedurphy/get-data-api:$(VERSION) -f Dockerfile . --push
 
 terraform-apply:
 	terraform apply --auto-approve -var-file="secret.tfvars"

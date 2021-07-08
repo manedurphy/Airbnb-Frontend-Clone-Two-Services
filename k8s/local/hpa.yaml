@@ -3,7 +3,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: hosts-api-deploy
 spec:
-  maxReplicas: 3
+  maxReplicas: 6
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
@@ -16,7 +16,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: properties-api-deploy
 spec:
-  maxReplicas: 3
+  maxReplicas: 6
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
@@ -29,7 +29,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: get-data-api-deploy
 spec:
-  maxReplicas: 6
+  maxReplicas: 10
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
@@ -42,7 +42,7 @@ kind: HorizontalPodAutoscaler
 metadata:
   name: static-deploy
 spec:
-  maxReplicas: 6
+  maxReplicas: 10
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1

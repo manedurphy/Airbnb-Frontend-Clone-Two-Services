@@ -15,7 +15,8 @@ spec:
         app: static-files-deploy
     spec:
       containers:
-      - image: manedurphy/static-files:1.0.0@sha256:8637add1e2c2d7736c82aa2b982373b4776875688c9c9008881eea592b30c8f0
+      - image: manedurphy/static-files:1.0.0
+        imagePullPolicy: Always
         name: static-files
         env:
         - name: HOSTS_API
@@ -119,7 +120,8 @@ spec:
         app: properties-api-deploy
     spec:
       containers:
-      - image: manedurphy/properties-api:1.0.0@sha256:c5c343adea5219c2d4530dbcbb61bb35fed88a857246d6d84328c1d67355e706
+      - image: manedurphy/properties-api:1.0.0
+        imagePullPolicy: Always
         name: properties-api
         env:
         - name: HOST
@@ -143,6 +145,8 @@ spec:
           value: properties
         - name: HOSTS_API
           value: http://hosts-api-service:8080
+        - name: GIN_MODE
+          value: release
         resources:
           requests:
             memory: "100Mi"
@@ -180,7 +184,8 @@ spec:
         app: hosts-api-deploy
     spec:
       containers:
-      - image: manedurphy/hosts-api:1.0.0@sha256:b8f8d0644d1914d6b6676943df02925624efb7e073e673a999510889b2ac6dc3
+      - image: manedurphy/hosts-api:1.0.0
+        imagePullPolicy: Always
         name: hosts-api
         env:
         - name: HOST
@@ -202,6 +207,8 @@ spec:
           value: hosts
         - name: PROPERTIES_API
           value: http://properties-api-service:8081
+        - name: GIN_MODE
+          value: release
         resources:
           requests:
             memory: "100Mi"
@@ -239,7 +246,8 @@ spec:
         app: get-data-api-deploy
     spec:
       containers:
-      - image: manedurphy/get-data-api:1.0.0@sha256:0de65b74cdd65cb0418ac16a13743f342a9072b206b1a9a9ab9221cb52bf90ee
+      - image: manedurphy/get-data-api
+        imagePullPolicy: Always
         name: get-data-api
         env:
         - name: REDIS_READ_URL
@@ -250,6 +258,8 @@ spec:
           value: http://hosts-api-service:8080
         - name: PROPERTIES_API
           value: http://properties-api-service:8081
+        - name: GIN_MODE
+          value: release
         resources:
           requests:
             memory: "100Mi"
