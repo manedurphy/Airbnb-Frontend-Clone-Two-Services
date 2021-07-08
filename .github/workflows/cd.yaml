@@ -40,4 +40,6 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
 
     - name: Build and push images
-      run: make docker-push
+      run: |
+        docker buildx create --name my-builder --use
+        make docker-push
