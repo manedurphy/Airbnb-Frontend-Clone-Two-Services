@@ -1,9 +1,19 @@
-FROM ubuntu
+FROM --platform=${BUILDPLATFORM} golang:1.16-alpine3.14 as builder
+
+ARG TARGETARCH
+ARG TARGETOS
 
 WORKDIR /app
 
-COPY ./hosts-api ./hosts-api
+COPY ./ ./
 
 ENV GIN_MODE=release
+RUN CGO_ENABLED=0 GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build -o hosts-api .
+
+FROM alpine:3.14.0
+
+WORKDIR /app
+
+COPY --from=builder /app/hosts-api ./
 
 ENTRYPOINT ["/app/hosts-api"]

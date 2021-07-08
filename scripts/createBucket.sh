@@ -1,1 +1,0 @@
-aws s3api create-bucket --bucket airbnb-clone-photos --region us-east-1

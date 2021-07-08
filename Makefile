@@ -36,45 +36,35 @@ ingress-controller:
 ingress-controller-destroy:
 	kubectl delete ns ingress-nginx --force --grace-period=0
 
-prometheus:
-	kubectl create namespace monitoring
-	helm install --namespace=monitoring prometheus prometheus-community/kube-prometheus-stack
-
-prometheus-destroy:
-	kubectl delete namespace monitoring
-
-prometheus-ui:
-	kubectl port-forward -n monitoring service/prometheus-kube-prometheus-prometheus 9090:9090
-
-grafana:
-	kubectl port-forward -n monitoring deployment/prometheus-grafana 3000:3000
-
 deploy-local:
-	kubectl --namespace=default apply -f k8s/local/databases.yaml
+	kubectl create namespace airbnb
+	scripts/createSecrets.sh ${MYSQL_USER} ${MYSQL_PASSWORD} ${PROD_HOST}
+	kubectl --namespace=airbnb apply -f k8s/local
+
+deploy-kind:
+	kubectl --namespace=default apply -f k8s/kind/databases.yaml
 	kubectl wait --namespace=default --for=condition=Ready --timeout=5m pod -l app=mysql-hosts-deploy
 	kubectl wait --namespace=default --for=condition=Ready --timeout=5m pod -l app=mysql-properties-deploy
-	kubectl --namespace=default apply -f k8s/local
+	kubectl apply -f k8s/kind
 
 deploy-prod:
 	kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 	kubectl --namespace=default apply -f k8s/cloud
 
 destroy-local:
-	kubectl --namespace=default delete -f k8s/local
+	kubectl --namespace=airbnb delete -f k8s/local
+	kubectl delete namespace airbnb --force --grace-period=0
 
 destroy-prod:
 	kubectl delete -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 	kubectl --namespace=default delete -f k8s/cloud
 
+destroy-kind:
+	kubectl delete -f k8s/kind
+
 forward:
 	kubectl config set-context --current --namespace=ingress-nginx
 	kubectl port-forward service/ingress-nginx-controller 5000:80
-
-eks:
-	eksctl create cluster --config-file kubeconfig/eksctl.yaml
-
-eks-destroy:
-	eksctl delete cluster --config-file kubeconfig/eksctl.yaml
 
 # TESTING
 hosts-api-test:
@@ -127,21 +117,18 @@ properties-image-prod:
 
 build-prod: webpack hosts-image-prod properties-image-prod static-files-image get-data-image
 
-docker-push: build-prod
-	docker tag properties-api manedurphy/properties-api:$(VERSION)
-	docker push manedurphy/properties-api:$(VERSION)
+docker-push: webpack
+	cd static-server && \
+	docker buildx build --platform linux/arm,linux/amd64,linux/arm64 -t manedurphy/static-files:$(VERSION) -f Dockerfile.prod . --push
 
-	docker tag hosts-api manedurphy/hosts-api:$(VERSION)
-	docker push manedurphy/hosts-api:$(VERSION)
+	cd apis/properties-api && \
+	docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t manedurphy/properties-api:$(VERSION) -f Dockerfile.prod . --push
 
-	docker tag static-files manedurphy/static-files:$(VERSION)
-	docker push manedurphy/static-files:$(VERSION)
-	
-	docker tag get-data-api manedurphy/get-data-api:$(VERSION)
-	docker push manedurphy/get-data-api:$(VERSION)
+	cd apis/hosts-api && \
+	docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t manedurphy/hosts-api:$(VERSION) -f Dockerfile.prod . --push
 
-linode-cli:
-	docker run --rm -it -v $(shell pwd):/work -w /work --entrypoint /bin/bash manedurphy/linode-cli
+	cd apis/get-data-api && \
+	docker buildx build --platform linux/arm,linux/arm64,linux/amd64 -t manedurphy/get-data-api:$(VERSION) -f Dockerfile . --push
 
 terraform-apply:
 	terraform apply --auto-approve -var-file="secret.tfvars"
