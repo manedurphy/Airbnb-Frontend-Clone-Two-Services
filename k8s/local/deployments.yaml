@@ -4,6 +4,7 @@ metadata:
   labels:
     app: static-files-deploy
   name: static-files-deploy
+  namespace: airbnb
 spec:
   replicas: 1
   selector:
@@ -15,7 +16,7 @@ spec:
         app: static-files-deploy
     spec:
       containers:
-      - image: manedurphy/static-files:1.0.0
+      - image: manedurphy/static-files:1.0.1
         imagePullPolicy: Always
         name: static-files
         env:
@@ -49,6 +50,7 @@ metadata:
   labels:
     app: redis-read-deploy
   name: redis-read-deploy
+  namespace: airbnb
 spec:
   replicas: 1
   selector:
@@ -84,6 +86,7 @@ metadata:
   labels:
     app: redis-write-deploy
   name: redis-write-deploy
+  namespace: airbnb
 spec:
   replicas: 1
   selector:
@@ -109,6 +112,7 @@ metadata:
   labels:
     app: properties-api-deploy
   name: properties-api-deploy
+  namespace: airbnb
 spec:
   replicas: 1
   selector:
@@ -120,7 +124,7 @@ spec:
         app: properties-api-deploy
     spec:
       containers:
-      - image: manedurphy/properties-api:1.0.0
+      - image: manedurphy/properties-api:1.0.1
         imagePullPolicy: Always
         name: properties-api
         env:
@@ -173,6 +177,7 @@ metadata:
   labels:
     app: hosts-api-deploy
   name: hosts-api-deploy
+  namespace: airbnb
 spec:
   replicas: 1
   selector:
@@ -184,7 +189,7 @@ spec:
         app: hosts-api-deploy
     spec:
       containers:
-      - image: manedurphy/hosts-api:1.0.0
+      - image: manedurphy/hosts-api:1.0.1
         imagePullPolicy: Always
         name: hosts-api
         env:
@@ -235,6 +240,7 @@ metadata:
   labels:
     app: get-data-api-deploy
   name: get-data-api-deploy
+  namespace: airbnb
 spec:
   replicas: 1
   selector:
@@ -246,7 +252,7 @@ spec:
         app: get-data-api-deploy
     spec:
       containers:
-      - image: manedurphy/get-data-api
+      - image: manedurphy/get-data-api:1.0.1
         imagePullPolicy: Always
         name: get-data-api
         env:
@@ -269,13 +275,13 @@ spec:
             cpu: "200m"
         livenessProbe:
           httpGet:
-            path: /api/healthz
+            path: /healthz
             port: 8000
           initialDelaySeconds: 3
           periodSeconds: 3
         startupProbe:
           httpGet:
-            path: /api/healthz
+            path: /healthz
             port: 8000
           failureThreshold: 30
           periodSeconds: 10

@@ -20,7 +20,10 @@ module.exports = {
             },
             {
                 test: /\.svg$/,
-                use: 'file-loader',
+                loader: 'file-loader',
+                options: {
+                    publicPath: '/apps/airbnb-clone/',
+                },
             },
         ],
     },

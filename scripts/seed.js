@@ -6,8 +6,8 @@ const faker = require('faker');
 // const propertiesAPI = 'http://localhost:8081';
 
 // For use with Kind
-const hostsAPI = 'http://localhost:5000';
-const propertiesAPI = 'http://localhost:5000';
+// const hostsAPI = 'http://localhost:5000';
+// const propertiesAPI = 'http://localhost:5000';
 
 // For cloud load balancer
 // const hostsAPI = 'http://45.79.230.64';

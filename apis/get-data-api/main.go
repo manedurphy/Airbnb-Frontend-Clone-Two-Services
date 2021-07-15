@@ -9,10 +9,11 @@ import (
 
 func main() {
 	router := gin.Default()
+	commonPath := "/apps/airbnb-clone"
 
-	router.GET("/api/healthz", healthCheck)
-	router.GET("/api/hosted-by/:roomNumber", data.GetHostedByData)
-	router.GET("/api/photo-header/:roomNumber", data.GetPhotoHeaderData)
+	router.GET("/healthz", healthCheck)
+	router.GET(commonPath+"/api/hosted-by/:roomNumber", data.GetHostedByData)
+	router.GET(commonPath+"/api/photo-header/:roomNumber", data.GetPhotoHeaderData)
 	router.Run(":8000")
 }
 

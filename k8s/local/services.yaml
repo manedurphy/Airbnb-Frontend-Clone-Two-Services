@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: static-files-service
+  namespace: airbnb
 spec:
   selector:
     app: static-files-deploy
@@ -13,6 +14,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: properties-api-service
+  namespace: airbnb
 spec:
   selector:
     app: properties-api-deploy
@@ -24,6 +26,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: hosts-api-service
+  namespace: airbnb
 spec:
   selector:
     app: hosts-api-deploy
@@ -35,6 +38,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: get-data-api-service
+  namespace: airbnb
 spec:
   selector:
     app: get-data-api-deploy
@@ -46,6 +50,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis-write-service
+  namespace: airbnb
 spec:
   selector:
     app: redis-write-deploy
@@ -57,6 +62,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis-read-service
+  namespace: airbnb
 spec:
   selector:
     app: redis-read-deploy

@@ -9,7 +9,7 @@ import './index.css';
 ReactDOM.render(
     <Router>
         <Provider store={store}>
-            <Route exact path={'/rooms/:id'} component={App} />
+            <Route exact path={'/apps/airbnb-clone/rooms/:id'} component={App} />
         </Provider>
     </Router>,
     document.getElementById('header'),

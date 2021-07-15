@@ -10,7 +10,7 @@ module.exports = merge(common, {
     output: {
         filename: '[name].bundle.js',
         path: resolve(__dirname, 'static-server', 'dist'),
-        publicPath: '/',
+        publicPath: '/apps/airbnb-clone',
     },
     plugins: [
         new CleanWebpackPlugin(),

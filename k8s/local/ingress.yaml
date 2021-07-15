@@ -2,44 +2,49 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: airbnb-ingress
+  namespace: airbnb
   annotations:
     kubernetes.io/ingress.class: nginx
 spec:
   rules:
   - http:
       paths:
-      - path: /rooms/
+      - path: /apps/airbnb-clone/rooms/
         pathType: Prefix
         backend:
           service:
             name: static-files-service
             port:
               number: 5000
-      - path: /
+
+      - path: /apps/airbnb-clone
         pathType: Prefix
         backend:
           service:
             name: static-files-service
             port:
               number: 5000
-      - path: /properties
-        pathType: Prefix
-        backend:
-          service:
-            name: properties-api-service
-            port:
-              number: 8081
-      - path: /hosts
-        pathType: Prefix
-        backend:
-          service:
-            name: hosts-api-service
-            port:
-              number: 8080
-      - path: /api/
+
+      - path: /apps/airbnb-clone/api/
         pathType: Prefix
         backend:
           service:
             name: get-data-api-service
             port:
               number: 8000
+
+      - path: /apps/airbnb-clone/properties
+        pathType: Prefix
+        backend:
+          service:
+            name: properties-api-service
+            port:
+              number: 8081
+
+      - path: /apps/airbnb-clone/hosts
+        pathType: Prefix
+        backend:
+          service:
+            name: hosts-api-service
+            port:
+              number: 8080
