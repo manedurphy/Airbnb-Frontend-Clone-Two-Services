@@ -3,35 +3,51 @@ package property
 import (
 	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"properties-api/db"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/hashicorp/go-hclog"
 )
 
 var (
-	test = flag.Bool("test", false, "set to true when running unit tests")
+	test   = flag.Bool("test", false, "set to true when running unit tests")
+	logger = hclog.New(&hclog.LoggerOptions{
+		Name:       "properties	",
+		Level:      hclog.Debug,
+		Color:      hclog.ColorOff,
+		TimeFormat: time.RFC3339Nano,
+	})
 )
 
 func CreateProperty(c *gin.Context) {
 	flag.Parse()
 	req := CreatePropertyRequest{}
 
+	logger := logger.With("func", "CreateProperty")
+
 	if err := c.ShouldBind(&req); err != nil {
 		sendResponse(c, gin.H{"message": "invalid payload"}, 400)
 		return
 	}
 
+	logger.With("req", req).Debug("request received")
+
 	p := db.Property{}
 	setProps(&p, req)
+
+	logger.With("property", p).Debug("constructed property from request info")
 
 	if !*test {
 		err := confirmHostExists(p.HostId)
 
 		if err != nil {
+			logger.With("err", err).Debug("failed to confirm if host exists")
 			c.JSON(404, gin.H{
 				"message": err.Error(),
 			})
@@ -163,7 +179,10 @@ func confirmHostExists(hostId uuid.UUID) error {
 	request, _ := http.NewRequest("GET", os.Getenv("HOSTS_API")+"/hosts/host", nil)
 	request.Header.Set("host_id", hostId.String())
 
-	resp, _ := client.Do(request)
+	resp, err := client.Do(request)
+	if err != nil {
+		return fmt.Errorf("failed to make request: %w", err)
+	}
 
 	if resp.StatusCode == 404 {
 		return errors.New("could not find host with that ID, please try another")

@@ -1,0 +1,7 @@
+go 1.19
+
+use (
+	./apis/get-data-api
+	./apis/hosts-api
+	./apis/properties-api
+)

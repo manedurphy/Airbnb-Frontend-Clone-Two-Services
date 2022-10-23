@@ -4,20 +4,38 @@ import (
 	"errors"
 	"fmt"
 	"hosts-api/db"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/hashicorp/go-hclog"
 	"gorm.io/gorm"
+)
+
+var (
+	logger = hclog.New(&hclog.LoggerOptions{
+		Name:       "hosts",
+		Level:      hclog.Debug,
+		Color:      hclog.ColorOff,
+		TimeFormat: time.RFC3339Nano,
+	})
 )
 
 func CreateHost(c *gin.Context) {
 	req := CreateHostRequest{}
 
+	logger := logger.With("func", "CreateHost")
+
 	if err := c.ShouldBind(&req); err != nil {
-		panic(err)
+		logger.Error("failed bind request body: %s\n", err)
+		return
 	}
+
+	logger.With("req", req).Debug("request received")
 
 	h := db.Host{}
 	setProps(&h, &req)
+
+	logger.With("host", h).Debug("constructed host from request info")
 
 	hostExists := checkForExistingHost(h.Email)
 
